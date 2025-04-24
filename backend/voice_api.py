@@ -344,6 +344,269 @@ def init_celebrity_voices():
     
     return jsonify({'error': 'Failed to initialize celebrity voices'}), 500
 
+# Configuration API endpoints
+@app.route('/api/config/asterisk', methods=['POST'])
+def set_asterisk_config():
+    """Update Asterisk configuration settings"""
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        if not all(k in data for k in ['host', 'port', 'username', 'secret']):
+            return jsonify({
+                'success': False,
+                'message': 'Missing required fields'
+            }), 400
+        
+        # Save to environment variables (for the current process)
+        os.environ['ASTERISK_HOST'] = data['host']
+        os.environ['ASTERISK_PORT'] = str(data['port'])
+        os.environ['ASTERISK_USERNAME'] = data['username']
+        os.environ['ASTERISK_SECRET'] = data['secret']
+        os.environ['ASTERISK_CONTEXT'] = data.get('context', 'from-internal')
+        os.environ['ASTERISK_EXTENSION'] = data.get('extension', '1000')
+        
+        # Return success
+        return jsonify({
+            'success': True,
+            'message': 'Asterisk configuration updated successfully'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error updating Asterisk configuration: {str(e)}'
+        }), 500
+
+@app.route('/api/config/asterisk/status', methods=['GET'])
+def get_asterisk_status():
+    """Get Asterisk connection status"""
+    from backend.phone import PhoneCallManager, ASTERISK_HOST, ASTERISK_USERNAME, ASTERISK_SECRET
+    
+    try:
+        # Check if Asterisk credentials are configured
+        configured = all([ASTERISK_HOST, ASTERISK_USERNAME, ASTERISK_SECRET])
+        
+        # If not configured, return early
+        if not configured:
+            return jsonify({
+                'configured': False,
+                'connected': False
+            })
+        
+        # Try to connect to Asterisk
+        manager = PhoneCallManager()
+        connected = manager._connect_to_ami()
+        
+        return jsonify({
+            'configured': True,
+            'connected': connected,
+            'host': ASTERISK_HOST,
+            'message': 'Connected successfully' if connected else 'Failed to connect to Asterisk'
+        })
+    except Exception as e:
+        return jsonify({
+            'configured': configured if 'configured' in locals() else False,
+            'connected': False,
+            'message': f'Error checking Asterisk status: {str(e)}'
+        })
+
+@app.route('/api/config/asterisk/test', methods=['POST'])
+def test_asterisk_connection():
+    """Test a connection to Asterisk with provided credentials"""
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        if not all(k in data for k in ['host', 'username', 'secret']):
+            return jsonify({
+                'success': False,
+                'message': 'Missing required fields'
+            }), 400
+        
+        # Create a socket connection to the Asterisk AMI
+        import socket
+        import time
+        
+        # Parse port (default to 5038)
+        port = int(data.get('port', 5038))
+        
+        # Create a socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(5)  # 5 second timeout
+        
+        try:
+            # Connect to the AMI
+            sock.connect((data['host'], port))
+            
+            # Read the welcome message
+            welcome = sock.recv(1024).decode()
+            
+            # Send login command
+            login_cmd = (
+                f"Action: Login\r\n"
+                f"Username: {data['username']}\r\n"
+                f"Secret: {data['secret']}\r\n"
+                f"\r\n"
+            )
+            sock.send(login_cmd.encode())
+            
+            # Read the response
+            response = sock.recv(1024).decode()
+            
+            # Check if login was successful
+            success = "Success" in response
+            
+            # Always close the socket when done
+            sock.close()
+            
+            if success:
+                return jsonify({
+                    'success': True,
+                    'message': 'Successfully connected to Asterisk'
+                })
+            else:
+                return jsonify({
+                    'success': False,
+                    'message': 'Authentication failed'
+                })
+        except socket.timeout:
+            return jsonify({
+                'success': False,
+                'message': 'Connection timed out'
+            })
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'message': f'Connection error: {str(e)}'
+            })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error testing Asterisk connection: {str(e)}'
+        }), 500
+
+@app.route('/api/config/agi', methods=['POST'])
+def set_agi_config():
+    """Update AGI server configuration settings"""
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        if not all(k in data for k in ['host', 'port']):
+            return jsonify({
+                'success': False,
+                'message': 'Missing required fields'
+            }), 400
+        
+        # Save to environment variables (for the current process)
+        os.environ['AGI_HOST'] = data['host']
+        os.environ['AGI_PORT'] = str(data['port'])
+        
+        if 'cacheTimeout' in data:
+            os.environ['VOICE_CACHE_TIMEOUT'] = str(data['cacheTimeout'])
+        
+        # Return success
+        return jsonify({
+            'success': True,
+            'message': 'AGI configuration updated successfully'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error updating AGI configuration: {str(e)}'
+        }), 500
+
+@app.route('/api/config/agi/status', methods=['GET'])
+def get_agi_status():
+    """Get AGI server status"""
+    try:
+        # Get AGI server settings from environment variables
+        from backend.agi_server import AGI_HOST, AGI_PORT
+        
+        # Check if the AGI server is running by attempting to connect to it
+        import socket
+        
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)  # 1 second timeout
+        
+        try:
+            # Try to connect to the AGI server
+            sock.connect((AGI_HOST, AGI_PORT))
+            sock.close()
+            
+            # If we get here, the AGI server is running
+            return jsonify({
+                'running': True,
+                'host': AGI_HOST,
+                'port': AGI_PORT
+            })
+        except:
+            # If we can't connect, the AGI server is not running
+            return jsonify({
+                'running': False,
+                'host': AGI_HOST,
+                'port': AGI_PORT
+            })
+    except Exception as e:
+        return jsonify({
+            'running': False,
+            'message': f'Error checking AGI server status: {str(e)}'
+        })
+
+@app.route('/api/config/agi/restart', methods=['POST'])
+def restart_agi_server():
+    """Restart the AGI server"""
+    try:
+        # In a real implementation, we would restart the AGI server here
+        # For this demo, we'll just simulate a restart
+        import threading
+        from backend.agi_server import run_agi_server
+        
+        # Start a new AGI server thread
+        agi_thread = threading.Thread(target=run_agi_server)
+        agi_thread.daemon = True
+        agi_thread.start()
+        
+        # Return success
+        return jsonify({
+            'success': True,
+            'message': 'AGI server restarted successfully'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error restarting AGI server: {str(e)}'
+        }), 500
+
+@app.route('/api/config/voice', methods=['POST'])
+def set_voice_config():
+    """Update voice transformation settings"""
+    try:
+        data = request.get_json()
+        
+        # Validate required fields
+        if not all(k in data for k in ['pitchRange', 'formantRange', 'enabledEffects']):
+            return jsonify({
+                'success': False,
+                'message': 'Missing required fields'
+            }), 400
+        
+        # Save to environment variables (for the current process)
+        os.environ['VOICE_PITCH_RANGE'] = str(data['pitchRange'])
+        os.environ['VOICE_FORMANT_RANGE'] = str(data['formantRange'])
+        os.environ['VOICE_ENABLED_EFFECTS'] = ','.join(data['enabledEffects'])
+        
+        # Return success
+        return jsonify({
+            'success': True,
+            'message': 'Voice configuration updated successfully'
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error updating voice configuration: {str(e)}'
+        }), 500
+
 # Run the Flask API
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)
