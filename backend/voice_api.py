@@ -1,3 +1,16 @@
+
+import traceback
+from flask import jsonify
+
+@app.errorhandler(Exception)
+def handle_error(error):
+    print(f"Error: {str(error)}")
+    print(traceback.format_exc())
+    return jsonify({
+        'success': False,
+        'error': str(error)
+    }), 500
+
 import os
 import json
 from flask import Flask, request, jsonify, render_template, redirect, url_for

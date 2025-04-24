@@ -5,7 +5,7 @@ channel = "stable-24_05"
 packages = ["php"]
 
 [workflows]
-runButton = "Voice Changer"
+runButton = "Debug Voice API"
 
 [[workflows.workflow]]
 name = "Project"
@@ -75,6 +75,24 @@ args = "python run_voice_api.py"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "php -S 0.0.0.0:5000"
+
+[[workflows.workflow]]
+name = "Voice Changer Debug"
+author = 41879565
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python -u run_voice_api.py"
+
+[[workflows.workflow]]
+name = "Debug Voice API"
+author = 41879565
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python -u backend/voice_api.py --debug"
 
 [deployment]
 run = ["sh", "-c", "php -S 0.0.0.0:5000"]

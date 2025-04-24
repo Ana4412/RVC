@@ -499,7 +499,9 @@ class PhoneCallManager:
         return '\n'.join(dialplan)
     
     def handle_asterisk_dtmf(self, digit, call_id):
-        """Handle DTMF tones during an Asterisk call"""
+        """Handle DTMF tones during an Asterisk call.
+        This would typically be handled by the Asterisk dialplan,
+        but we provide this method to simulate the behavior."""
         try:
             # Process DTMF
             if not digit or not call_id:
@@ -510,10 +512,6 @@ class PhoneCallManager:
             
         except Exception as e:
             return {'success': False, 'message': str(e)}
-        
-        This would typically be handled by the Asterisk dialplan,
-        but we provide this method to simulate the behavior.
-        """
         if not self.is_configured():
             return {
                 'success': False,
