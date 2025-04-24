@@ -118,6 +118,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     async function initializeAudioSystem() {
         try {
+            // Initialize Tone.js
+            await Tone.start();
+            
             // Resume audio context (needed due to autoplay policies)
             await audioProcessor.resumeAudioContext();
             
@@ -138,7 +141,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 startButton.classList.add('hidden');
                 stopButton.classList.remove('hidden');
             }
-        });
+        } catch (error) {
+            console.error('Error initializing audio:', error);
+            Utils.showError('Failed to initialize audio system: ' + error.message);
+        }
     }
     
     // Stop the voice changer

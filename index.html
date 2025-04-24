@@ -27,7 +27,7 @@
                 </div>
             </div>
         </header>
-        
+
         <main>
             <section class="controls">
                 <div class="microphone-control">
@@ -38,7 +38,7 @@
                         <i class="fas fa-microphone-slash"></i> Stop Microphone
                     </button>
                 </div>
-                
+
                 <div class="status-indicator">
                     <div id="statusDot" class="status-dot inactive"></div>
                     <p id="statusText">Microphone inactive</p>
@@ -50,24 +50,24 @@
                     </button>
                 </div>
             </section>
-            
+
             <section class="voice-controls">
                 <div class="preset-controls">
                     <h2>Voice Transformation</h2>
-                    
+
                     <div class="voice-settings">
                         <div class="setting-group">
                             <label for="pitchSlider">Pitch</label>
                             <input type="range" id="pitchSlider" min="-12" max="12" value="0" class="slider">
                             <span id="pitchValue">0</span>
                         </div>
-                        
+
                         <div class="setting-group">
                             <label for="formantSlider">Formant</label>
                             <input type="range" id="formantSlider" min="-100" max="100" value="0" class="slider">
                             <span id="formantValue">0</span>
                         </div>
-                        
+
                         <div class="setting-group">
                             <label for="accentSelect">Accent</label>
                             <select id="accentSelect" class="select">
@@ -84,7 +84,7 @@
                                 <option value="alien">Alien</option>
                             </select>
                         </div>
-                        
+
                         <div class="setting-group">
                             <label for="effectSelect">Effect</label>
                             <select id="effectSelect" class="select">
@@ -97,18 +97,18 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="voices-container">
                     <div class="voices-selector">
                         <button class="voice-selector-btn active" data-target="celebrityVoicesList">Celebrity Voices</button>
                         <button class="voice-selector-btn" data-target="customVoicesList">Custom Voices</button>
                     </div>
-                    
+
                     <div id="celebrityVoicesList" class="voice-list">
                         <!-- Celebrity voices will be loaded here dynamically -->
                         <div class="loading-voices">Loading celebrity voices...</div>
                     </div>
-                    
+
                     <div id="customVoicesList" class="voice-list hidden">
                         <div class="voice-upload">
                             <form id="voiceUploadForm" enctype="multipart/form-data">
@@ -119,7 +119,7 @@
                                     <input type="file" id="voiceFile" name="voiceFile" accept="audio/*" class="file-input" required>
                                     <span id="fileNameDisplay">No file chosen</span>
                                 </div>
-                                
+
                                 <div class="voice-details">
                                     <input type="text" id="voiceName" name="voiceName" placeholder="Voice Name" required>
                                     <select id="accentType" name="accentType" class="select" required>
@@ -136,13 +136,13 @@
                                         <option value="scottish">Scottish</option>
                                     </select>
                                 </div>
-                                
+
                                 <button type="submit" id="uploadBtn" class="primary-btn">
                                     <i class="fas fa-plus-circle"></i> Add Custom Voice
                                 </button>
                             </form>
                         </div>
-                        
+
                         <div class="saved-voices">
                             <h3>Your Custom Voices</h3>
                             <div class="custom-voices-list">
@@ -153,12 +153,12 @@
                     </div>
                 </div>
             </section>
-            
+
             <section class="visualization">
                 <h2>Audio Visualization</h2>
                 <canvas id="audioVisualizer"></canvas>
             </section>
-            
+
             <section class="call-features">
                 <h2>Phone Call Features</h2>
                 <div class="call-features-content">
@@ -179,7 +179,7 @@
                     </div>
                 </div>
             </section>
-            
+
             <section class="usage-instructions">
                 <h2>How to Use with Calls</h2>
                 <div class="instructions-container">
@@ -190,7 +190,7 @@
                             <p>Click "Start Microphone" to activate the voice changing capabilities.</p>
                         </div>
                     </div>
-                    
+
                     <div class="instruction-step">
                         <div class="step-number">2</div>
                         <div class="step-content">
@@ -198,7 +198,7 @@
                             <p>Select a celebrity voice or create your own custom voice.</p>
                         </div>
                     </div>
-                    
+
                     <div class="instruction-step">
                         <div class="step-number">3</div>
                         <div class="step-content">
@@ -206,7 +206,7 @@
                             <p>Click "Make Phone Call" or use your calling app and select "Voice Changer" as your microphone input.</p>
                         </div>
                     </div>
-                    
+
                     <div class="instruction-step">
                         <div class="step-number">4</div>
                         <div class="step-content">
@@ -217,7 +217,7 @@
                 </div>
             </section>
         </main>
-        
+
         <footer>
             <p>&copy; 2025 Real-Time Voice Changer. All rights reserved.</p>
             <div class="browser-support">
@@ -225,7 +225,7 @@
             </div>
         </footer>
     </div>
-    
+
     <!-- Modals -->
     <div id="errorModal" class="modal">
         <div class="modal-content">
@@ -234,7 +234,7 @@
             <p id="errorMessage"></p>
         </div>
     </div>
-    
+
     <div id="successModal" class="modal">
         <div class="modal-content success">
             <span class="close-modal">&times;</span>
@@ -242,7 +242,7 @@
             <p id="successMessage"></p>
         </div>
     </div>
-    
+
     <div id="permissionModal" class="modal">
         <div class="modal-content">
             <h2><i class="fas fa-microphone"></i> Microphone Access Required</h2>
@@ -261,7 +261,7 @@
             </button>
         </div>
     </div>
-    
+
     <div id="phoneCallModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" id="callCancelBtn">&times;</span>
@@ -271,12 +271,12 @@
                     <label for="phoneNumber">Phone Number</label>
                     <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Enter phone number" required>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Selected Voice</label>
                     <p id="selectedVoiceDisplay" class="text-muted">No voice selected</p>
                 </div>
-                
+
                 <div class="form-actions">
                     <button type="button" id="callCancelBtnBottom" class="secondary-btn">Cancel</button>
                     <button type="submit" id="callBtn" class="primary-btn">
@@ -286,8 +286,9 @@
             </form>
         </div>
     </div>
-    
+
     <!-- JavaScript files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/audioProcessor.js"></script>
     <script src="js/voiceTransformer.js"></script>

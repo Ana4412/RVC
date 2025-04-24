@@ -50,6 +50,19 @@ task = "shell.exec"
 args = "python run_voice_api.py"
 waitForPort = 5001
 
+[[workflows.workflow]]
+name = "Voice API Server"
+author = 41879565
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd backend"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python voice_api.py"
+
 [deployment]
 run = ["sh", "-c", "php -S 0.0.0.0:5000"]
 
