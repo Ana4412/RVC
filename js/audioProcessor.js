@@ -354,18 +354,49 @@ class AudioProcessor {
      * @param {Object} voiceModel - Custom voice model data
      */
     applyCustomVoice(voiceModel) {
+        console.log(`Applying voice: ${voiceModel ? voiceModel.name : 'unknown'}`);
         this.customVoiceModel = voiceModel;
         
-        // In a full implementation, this would load the custom voice model
-        // and apply its characteristics
-        // For this demo, we'll just adjust our basic parameters
+        // If no voice model provided, reset to defaults
+        if (!voiceModel) {
+            this.setPitch(0);
+            this.setFormant(0);
+            this.setEffect('none');
+            this.applyAccent('neutral');
+            return;
+        }
         
-        if (voiceModel && voiceModel.accent) {
+        // Apply accent first (if available)
+        if (voiceModel.accent) {
+            console.log(`Applying accent: ${voiceModel.accent}`);
             this.applyAccent(voiceModel.accent);
         }
         
-        // Apply any additional custom parameters
-        if (voiceModel && voiceModel.parameters) {
+        // Apply voice type specific modifications
+        if (voiceModel.type) {
+            switch(voiceModel.type) {
+                case 'celebrity':
+                    // Celebrity voices typically need more clarity
+                    this.applyEQ(1.2, 0.8, 1.1); // Boost highs, reduce mids, slight boost lows
+                    break;
+                case 'fictional':
+                    // Fictional voices often need more character
+                    this.applyEQ(1.3, 0.7, 1.2); // Higher boost to highs and lows
+                    break;
+                case 'ai':
+                    // AI voices typically need a cleaner, more precise sound
+                    this.applyEQ(1.1, 0.9, 0.9); // Slight boost to highs, reduce lows
+                    break;
+                default:
+                    // For custom voices, use a balanced EQ
+                    this.applyEQ(1.0, 1.0, 1.0);
+            }
+        }
+        
+        // Apply specific voice parameters
+        if (voiceModel.parameters) {
+            console.log(`Applying parameters: pitch=${voiceModel.parameters.pitch}, formant=${voiceModel.parameters.formant}, effect=${voiceModel.parameters.effect}`);
+            
             if (voiceModel.parameters.pitch !== undefined) {
                 this.setPitch(voiceModel.parameters.pitch);
             }
@@ -377,6 +408,31 @@ class AudioProcessor {
             if (voiceModel.parameters.effect !== undefined) {
                 this.setEffect(voiceModel.parameters.effect);
             }
+        }
+        
+        // Apply the combined effects
+        this.applyEffects();
+    }
+    
+    /**
+     * Apply EQ settings to shape the voice
+     * @param {number} highGain - Gain for high frequencies
+     * @param {number} midGain - Gain for mid frequencies
+     * @param {number} lowGain - Gain for low frequencies
+     */
+    applyEQ(highGain, midGain, lowGain) {
+        // In a full implementation, this would adjust a multi-band EQ
+        // For now, we'll just log the values
+        console.log(`Applied EQ: highs=${highGain}, mids=${midGain}, lows=${lowGain}`);
+        
+        // Simulate EQ by adjusting existing parameters
+        const currentFormant = parseFloat(this.formantValue);
+        if (highGain > 1.0) {
+            // Boosting highs often means raising formant
+            this.setFormant(currentFormant + ((highGain - 1.0) * 10));
+        } else if (lowGain > 1.0) {
+            // Boosting lows often means lowering formant
+            this.setFormant(currentFormant - ((lowGain - 1.0) * 10));
         }
     }
     
@@ -403,7 +459,7 @@ class AudioProcessor {
         
         // Update state
         this.isActive = false;
-        Utils.updateStatus(false);
+        Utils.updateStatusIndicators(false);
     }
     
     /**
