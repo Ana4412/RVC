@@ -10,6 +10,7 @@ class DebugBot:
     def __init__(self):
         self.logger = logging.getLogger('DebugBot')
         self.issues = []
+        self.ml_debugger = MLDebugger()
         
     def check_port_conflicts(self) -> List[Dict]:
         """Check for port conflicts"""
@@ -103,9 +104,31 @@ class DebugBot:
         return results
 
     def auto_fix(self) -> Dict:
-        """Attempt to automatically fix detected issues"""
+        """Use ML to determine and apply best fix strategy"""
+        diagnostic_results = self.run_diagnostics()
+        resolution = self.ml_debugger.predict_resolution(diagnostic_results)
+        
         fixes = {
-            'syntax_fixed': self.fix_syntax_errors(),
-            'message': 'Attempted to fix syntax errors'
+            'resolution_type': resolution,
+            'fixes_applied': []
         }
+        
+        if resolution == 'syntax_fix' or resolution == 'auto_fix':
+            syntax_fixed = self.fix_syntax_errors()
+            if syntax_fixed:
+                fixes['fixes_applied'].append('syntax_errors')
+                
+        if resolution == 'port_fix' or resolution == 'auto_fix':
+            for conflict in diagnostic_results.get('port_conflicts', []):
+                fixes['fixes_applied'].append(f"port_{conflict['port']}")
+                
+        if resolution == 'config_fix' or resolution == 'auto_fix':
+            if diagnostic_results.get('asterisk_config'):
+                fixes['fixes_applied'].append('asterisk_config')
+                
+        # Save the diagnostic record for training
+        success = len(fixes['fixes_applied']) > 0
+        self.ml_debugger.save_diagnostic_record(diagnostic_results, resolution, success)
+        
+        fixes['message'] = f"Applied {resolution} strategy with {len(fixes['fixes_applied'])} fixes"
         return fixes
