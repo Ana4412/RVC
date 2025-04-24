@@ -319,30 +319,16 @@ const Utils = {
      */
     checkBrowserCompatibility: function() {
         try {
-            // Check for Web Audio API
-            const hasWebAudio = 'AudioContext' in window || 'webkitAudioContext' in window;
+            // Check for Web Audio API and fallbacks
+            const hasWebAudio = !!(window.AudioContext || window.webkitAudioContext);
 
-            // Check for getUserMedia API
-            const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-
-            // Check for required audio processing features
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            const context = new AudioContext();
-            const hasRequiredNodes = !!(
-                context.createGain &&
-                context.createAnalyser &&
-                context.createBiquadFilter
-            );
-            context.close();
-
-            // Check for modern browser features
+            // Check for required APIs
             const hasRequiredAPIs = !!(
-                window.Float32Array &&
-                window.Uint8Array &&
-                window.requestAnimationFrame
+                navigator.mediaDevices &&
+                navigator.mediaDevices.getUserMedia &&
+                window.MediaStreamAudioSourceNode
             );
-
-            return hasWebAudio && hasGetUserMedia && hasRequiredNodes && hasRequiredAPIs;
+            return hasWebAudio && hasRequiredAPIs;
         } catch (e) {
             console.error('Browser compatibility check failed:', e);
             return false;

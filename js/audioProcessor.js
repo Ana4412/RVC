@@ -125,7 +125,7 @@ class AudioProcessor {
             
             // Update state
             this.isActive = true;
-            Utils.updateStatus(true);
+            Utils.Utils.updateStatusIndicators(true);
             
             return true;
         } catch (error) {
@@ -143,9 +143,11 @@ class AudioProcessor {
             // Set up Tone.js processing
             const pitchShift = new Tone.PitchShift({
                 pitch: this.pitch,
-                windowSize: 0.1,
-                delayTime: 0.05,
-                feedback: 0
+                windowSize: 0.15,
+                delayTime: 0.03,
+                feedback: 0.01,
+                wet: 1,
+                fade: 0.005
             }).toDestination();
             
             // Connect microphone to pitch shifter

@@ -595,3 +595,10 @@ class PhoneCallManager:
     def handle_voice_selection(self, digit, call_sid):
         """Legacy method for voice selection, now uses Asterisk DTMF handling"""
         return self.handle_asterisk_dtmf(digit, call_sid)
+    
+    def handle_asterisk_dtmf(self, digit, call_id):
+        """Handle DTMF tones during an Asterisk call"""
+        if not digit or not call_id:
+            return {'success': False, 'message': 'Invalid DTMF input'}
+            
+        return {'success': True, 'digit': digit, 'call_id': call_id}
