@@ -45,9 +45,17 @@ class AudioProcessor {
      */
     async initialize() {
         try {
-            // Create audio context
+            // Check browser compatibility first
+            if (!window.AudioContext && !window.webkitAudioContext) {
+                throw new Error('Web Audio API not supported');
+            }
+            
+            // Create audio context with error handling
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             this.audioContext = new AudioContext();
+            
+            // Log successful initialization
+            console.log('Audio processor initialized successfully');
             
             // Set up analyser for visualization
             this.analyser = this.audioContext.createAnalyser();

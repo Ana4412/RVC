@@ -5,9 +5,11 @@
 
 class VoiceTransformer {
     constructor() {
-        // Voice models storage
+        // Voice models storage with caching
         this.voiceModels = new Map();
         this.celebrityVoices = new Map();
+        this.voiceCache = new Map();
+        this.cacheTimeout = 3600000; // 1 hour cache
         
         // TensorFlow model for voice transformation (placeholder)
         this.tfModel = null;

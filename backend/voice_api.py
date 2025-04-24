@@ -3,9 +3,11 @@ import os
 import json
 import traceback
 from flask import Flask, request, jsonify, render_template, redirect, url_for
+from functools import lru_cache
+from datetime import datetime, timedelta
 from backend.debug_bot import DebugBot
 
-app = Flask(__name__, template_folder='..', static_folder='..', static_url_path='')
+app = Flask(__name__, template_folder='..', static_folder='..', static_url_path='/')
 
 @app.route('/')
 def home():

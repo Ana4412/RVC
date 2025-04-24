@@ -5,7 +5,7 @@ channel = "stable-24_05"
 packages = ["glibcLocales", "php"]
 
 [workflows]
-runButton = "Voice API Development"
+runButton = "Voice Changer Production"
 
 [[workflows.workflow]]
 name = "Project"
@@ -105,6 +105,24 @@ args = "python run_voice_api.py"
 
 [[workflows.workflow]]
 name = "Voice API Development"
+author = 41879565
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python run_voice_api.py"
+
+[[workflows.workflow]]
+name = "Voice Changer Production"
+author = 41879565
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python run_voice_api.py"
+
+[[workflows.workflow]]
+name = "Voice Changer Production"
 author = 41879565
 mode = "sequential"
 
