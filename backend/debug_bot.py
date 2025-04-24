@@ -5,6 +5,7 @@ import socket
 import requests
 import json
 from typing import Dict, List, Optional
+from backend.ml_debugger import MLDebugger
 
 class DebugBot:
     def __init__(self):
