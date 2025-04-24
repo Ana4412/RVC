@@ -182,9 +182,11 @@ class AudioProcessor {
             // Add pitch shifter
             const pitchShift = new Tone.PitchShift({
                 pitch: this.pitch,
-                windowSize: 0.1,
-                delayTime: 0.05,
-                feedback: 0
+                windowSize: 0.15,
+                delayTime: 0.03,
+                feedback: 0,
+                wet: 1,
+                fade: 0.01
             });
             effectsChain.push(pitchShift);
             
@@ -505,7 +507,7 @@ class AudioProcessor {
     /**
      * Draw the audio visualization
      */
-    drawVisualization() {
+    drawVisualization = () => {
         if (!this.isVisualizing || !this.analyser || !this.canvasCtx) return;
         
         // Get time domain data

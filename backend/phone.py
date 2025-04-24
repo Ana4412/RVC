@@ -21,7 +21,8 @@ class PhoneCallManager:
         self.ami_socket = None
         self.active_calls = {}
         
-    def _connect_to_ami(self, retry_count=3, retry_delay=2):
+    def _connect_to_ami(self, retry_count=5, retry_delay=3):
+        """Connect to the Asterisk Manager Interface with improved retry mechanism"""
         """Connect to the Asterisk Manager Interface with retry mechanism
         
         Args:
