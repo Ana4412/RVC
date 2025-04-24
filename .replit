@@ -2,7 +2,7 @@ modules = ["php", "python-3.11", "postgresql-16"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["php"]
+packages = ["glibcLocales", "php"]
 
 [workflows]
 runButton = "Debug Voice API"
