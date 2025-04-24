@@ -6,7 +6,6 @@ from flask import Flask, request, jsonify, render_template, redirect, url_for
 from backend.debug_bot import DebugBot
 
 app = Flask(__name__, template_folder='..', static_folder='..')
-debug_bot = DebugBot()
 
 @app.route('/')
 def home():
