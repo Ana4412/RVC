@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Voice Changer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Tone.js for audio processing -->
+    <script src="https://unpkg.com/tone@14.7.77/build/Tone.js"></script>
+    <!-- TensorFlow.js for voice transformation -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.12.0/dist/tf.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Real-Time Voice Changer</h1>
+            <p class="subtitle">Transform your voice during calls with custom accents</p>
+        </header>
+        
+        <main>
+            <section class="controls">
+                <div class="microphone-control">
+                    <button id="startButton" class="primary-btn">
+                        <i class="fas fa-microphone"></i> Start Microphone
+                    </button>
+                    <button id="stopButton" class="danger-btn" disabled>
+                        <i class="fas fa-microphone-slash"></i> Stop Microphone
+                    </button>
+                </div>
+                
+                <div class="status-indicator">
+                    <div id="statusDot" class="status-dot inactive"></div>
+                    <p id="statusText">Microphone inactive</p>
+                </div>
+            </section>
+            
+            <section class="voice-controls">
+                <div class="preset-controls">
+                    <h2>Voice Transformation</h2>
+                    
+                    <div class="voice-settings">
+                        <div class="setting-group">
+                            <label for="pitchSlider">Pitch</label>
+                            <input type="range" id="pitchSlider" min="-12" max="12" value="0" class="slider">
+                            <span id="pitchValue">0</span>
+                        </div>
+                        
+                        <div class="setting-group">
+                            <label for="formantSlider">Formant</label>
+                            <input type="range" id="formantSlider" min="-100" max="100" value="0" class="slider">
+                            <span id="formantValue">0</span>
+                        </div>
+                        
+                        <div class="setting-group">
+                            <label for="accentSelect">Accent</label>
+                            <select id="accentSelect" class="select">
+                                <option value="neutral">Neutral</option>
+                                <option value="british">British</option>
+                                <option value="american">American</option>
+                                <option value="australian">Australian</option>
+                                <option value="french">French</option>
+                                <option value="german">German</option>
+                                <option value="spanish">Spanish</option>
+                                <option value="russian">Russian</option>
+                                <option value="indian">Indian</option>
+                            </select>
+                        </div>
+                        
+                        <div class="setting-group">
+                            <label for="effectSelect">Effect</label>
+                            <select id="effectSelect" class="select">
+                                <option value="none">None</option>
+                                <option value="reverb">Reverb</option>
+                                <option value="echo">Echo</option>
+                                <option value="robot">Robot</option>
+                                <option value="alien">Alien</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="custom-voices">
+                    <h2>Custom Voices</h2>
+                    <div class="voice-upload">
+                        <form id="voiceUploadForm" enctype="multipart/form-data">
+                            <div class="file-upload">
+                                <label for="voiceFile" class="file-label">
+                                    <i class="fas fa-upload"></i> Choose Voice File
+                                </label>
+                                <input type="file" id="voiceFile" name="voiceFile" accept="audio/*" class="file-input" required>
+                                <span id="fileNameDisplay">No file chosen</span>
+                            </div>
+                            
+                            <div class="voice-details">
+                                <input type="text" id="voiceName" name="voiceName" placeholder="Voice Name" required>
+                                <input type="text" id="accentType" name="accentType" placeholder="Accent Type (e.g., Scottish, Japanese)" required>
+                            </div>
+                            
+                            <button type="submit" id="uploadBtn" class="primary-btn">
+                                <i class="fas fa-plus-circle"></i> Add Custom Voice
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div class="saved-voices">
+                        <h3>Your Custom Voices</h3>
+                        <div id="voicesList" class="voices-list">
+                            <!-- Custom voices will be loaded here dynamically -->
+                            <div class="loading-voices">Loading custom voices...</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="visualization">
+                <h2>Audio Visualization</h2>
+                <canvas id="audioVisualizer"></canvas>
+            </section>
+            
+            <section class="usage-instructions">
+                <h2>How to Use with Calls</h2>
+                <div class="instructions-container">
+                    <div class="instruction-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Start the Voice Changer</h3>
+                            <p>Click "Start Microphone" to activate the voice changing capabilities.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="instruction-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Adjust Voice Settings</h3>
+                            <p>Modify the pitch, formant, accent, and effects to get your desired voice.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="instruction-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Make Your Call</h3>
+                            <p>Open your calling app (Zoom, Discord, etc.) and select "Voice Changer" as your microphone input.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="instruction-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>Talk Normally</h3>
+                            <p>Speak naturally. The voice changer will apply transformations in real-time.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>&copy; 2023 Real-Time Voice Changer. All rights reserved.</p>
+            <div class="browser-support">
+                <p>Best experienced in Chrome, Firefox, and Edge.</p>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Modals -->
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2><i class="fas fa-exclamation-triangle"></i> Error</h2>
+            <p id="errorMessage"></p>
+        </div>
+    </div>
+    
+    <div id="permissionModal" class="modal">
+        <div class="modal-content">
+            <h2><i class="fas fa-microphone"></i> Microphone Access Required</h2>
+            <p>This application needs access to your microphone to function. Please allow microphone access when prompted.</p>
+            <button id="permissionOkBtn" class="primary-btn">Got it</button>
+        </div>
+    </div>
+    
+    <!-- JavaScript files -->
+    <script src="js/utils.js"></script>
+    <script src="js/audioProcessor.js"></script>
+    <script src="js/voiceTransformer.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
