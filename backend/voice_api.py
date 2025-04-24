@@ -1,7 +1,6 @@
 import os
 import json
 from flask import Flask, request, jsonify, render_template, redirect, url_for
-from twilio.twiml.voice_response import VoiceResponse
 from backend import models
 from backend.phone import PhoneCallManager
 
@@ -223,13 +222,13 @@ def delete_voice(voice_id):
     return jsonify({'error': 'Failed to delete voice'}), 500
 
 # Phone Call Routes
-@app.route('/api/call/start', methods=['POST'])
+@app.route('/api/asterisk/originate', methods=['POST'])
 def start_call():
-    """Start a new phone call with voice transformation"""
+    """Start a new phone call with voice transformation using Asterisk"""
     if not phone_manager.is_configured():
         return jsonify({
             'success': False,
-            'message': 'Twilio is not properly configured'
+            'message': 'Asterisk is not properly configured'
         }), 400
     
     data = request.get_json()
@@ -271,39 +270,39 @@ def get_call_status(call_sid):
     
     return jsonify(result), 400
 
-@app.route('/api/call/voice', methods=['POST'])
-def voice():
-    """Handle incoming voice calls"""
-    # Get the call SID
-    call_sid = request.values.get('CallSid')
+@app.route('/api/asterisk/dialplan', methods=['GET'])
+def generate_dialplan():
+    """Generate Asterisk dialplan for voice transformation"""
+    # Get the voice ID from query parameters
+    voice_id = request.args.get('voice_id')
     
-    # Check if there's a session for this call
-    session = None
-    voice_id = None
+    # Generate the appropriate dialplan
+    dialplan = phone_manager.generate_asterisk_dialplan(voice_id)
     
-    if call_sid:
-        session = models.get_call_session(call_sid)
-        if session:
-            voice_id = session.get('voice_id')
-    
-    # Generate the appropriate TwiML
-    twiml = phone_manager.generate_voice_twiml(voice_id)
-    
-    return twiml, 200, {'Content-Type': 'text/xml'}
+    return dialplan, 200, {'Content-Type': 'text/plain'}
 
-@app.route('/api/call/voice/process', methods=['POST'])
-def voice_process():
-    """Process user input during a call"""
-    # Get the digit pressed
-    digit = request.values.get('Digits', '')
+@app.route('/api/asterisk/dtmf', methods=['POST'])
+def handle_dtmf():
+    """Process DTMF input during an Asterisk call"""
+    data = request.get_json()
     
-    # Get the call SID
-    call_sid = request.values.get('CallSid')
+    if not data:
+        return jsonify({'error': 'Invalid request data'}), 400
     
-    # Generate the TwiML response
-    twiml = phone_manager.handle_voice_selection(digit, call_sid)
+    # Get the digit pressed and call ID
+    digit = data.get('digit', '')
+    call_id = data.get('call_id')
     
-    return twiml, 200, {'Content-Type': 'text/xml'}
+    if not call_id:
+        return jsonify({'error': 'Call ID is required'}), 400
+    
+    # Handle the DTMF input
+    result = phone_manager.handle_asterisk_dtmf(digit, call_id)
+    
+    if result.get('success'):
+        return jsonify(result)
+    
+    return jsonify(result), 400
 
 @app.route('/api/call/voice/hangup', methods=['POST'])
 def voice_hangup():
@@ -314,12 +313,13 @@ def voice_hangup():
     if call_sid:
         models.update_call_session_status(call_sid, 'completed')
     
-    # Generate a simple response
-    response = VoiceResponse()
-    response.say("Thank you for using our voice changing service. Goodbye!")
-    response.hangup()
+    # Generate a simple response for Asterisk
+    response = {
+        "action": "hangup",
+        "message": "Thank you for using our voice changing service. Goodbye!"
+    }
     
-    return str(response), 200, {'Content-Type': 'text/xml'}
+    return jsonify(response), 200
 
 @app.route('/api/call/voice/status', methods=['POST'])
 def voice_status():
