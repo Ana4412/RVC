@@ -357,8 +357,61 @@
         </div>
     </div>
 
+    <!-- Debug Panel -->
+    <div class="config-section">
+        <h2>Debug Panel</h2>
+        <p>Automatically detect and fix common issues with the voice changer application.</p>
+        
+        <div id="debugStatus" class="status warning">
+            Click Debug to start automated diagnostics
+        </div>
+
+        <div class="form-actions">
+            <button type="button" id="debugBtn" class="primary-btn">
+                <i class="fas fa-bug"></i> Debug System
+            </button>
+        </div>
+
+        <div id="debugResults" class="debug-results hidden">
+            <h3>Diagnostic Results</h3>
+            <pre id="debugOutput"></pre>
+        </div>
+    </div>
+
     <script src="../js/utils.js"></script>
     <script>
+    // Add Debug Button Handler
+    document.getElementById('debugBtn').addEventListener('click', async function() {
+        const debugStatus = document.getElementById('debugStatus');
+        const debugResults = document.getElementById('debugResults');
+        const debugOutput = document.getElementById('debugOutput');
+        
+        try {
+            debugStatus.className = 'status warning';
+            debugStatus.textContent = 'Running diagnostics...';
+            
+            const response = await fetch('/api/debug/run', {
+                method: 'POST'
+            });
+            
+            const results = await response.json();
+            
+            debugResults.classList.remove('hidden');
+            debugOutput.textContent = JSON.stringify(results, null, 2);
+            
+            if (results.status === 'ok') {
+                debugStatus.className = 'status success';
+                debugStatus.textContent = 'No issues found';
+            } else {
+                debugStatus.className = 'status error';
+                debugStatus.textContent = 'Issues found and attempted fixes applied';
+            }
+        } catch (error) {
+            debugStatus.className = 'status error';
+            debugStatus.textContent = 'Error running diagnostics: ' + error.message;
+            console.error('Debug error:', error);
+        }
+    });
     document.addEventListener('DOMContentLoaded', function() {
         // Load saved configurations
         loadAsteriskConfig();

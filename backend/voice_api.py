@@ -14,6 +14,25 @@ def handle_error(error):
 import os
 import json
 from flask import Flask, request, jsonify, render_template, redirect, url_for
+from backend.debug_bot import DebugBot
+
+app = Flask(__name__)
+debug_bot = DebugBot()
+
+@app.route('/api/debug/run', methods=['POST'])
+def run_debug():
+    """Run automated debugging"""
+    try:
+        results = debug_bot.run_diagnostics()
+        if results['status'] == 'error':
+            fixes = debug_bot.auto_fix()
+            results['fixes'] = fixes
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({
+            'error': str(e),
+            'trace': traceback.format_exc()
+        }), 500
 from backend import models
 from backend.phone import PhoneCallManager
 from backend.phone_numbers import PhoneNumberManager
