@@ -2,6 +2,14 @@
 import traceback
 from flask import jsonify
 
+import os
+import json
+import traceback
+from flask import Flask, request, jsonify, render_template, redirect, url_for
+from backend.debug_bot import DebugBot
+
+app = Flask(__name__)
+
 @app.errorhandler(Exception)
 def handle_error(error):
     print(f"Error: {str(error)}")
@@ -10,13 +18,6 @@ def handle_error(error):
         'success': False,
         'error': str(error)
     }), 500
-
-import os
-import json
-from flask import Flask, request, jsonify, render_template, redirect, url_for
-from backend.debug_bot import DebugBot
-
-app = Flask(__name__)
 debug_bot = DebugBot()
 
 @app.route('/api/debug/run', methods=['POST'])

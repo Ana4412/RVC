@@ -5,7 +5,7 @@ channel = "stable-24_05"
 packages = ["glibcLocales", "php"]
 
 [workflows]
-runButton = "Debug Voice API"
+runButton = "Voice API"
 
 [[workflows.workflow]]
 name = "Project"
@@ -93,6 +93,15 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python -u backend/voice_api.py --debug"
+
+[[workflows.workflow]]
+name = "Voice API"
+author = 41879565
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python run_voice_api.py"
 
 [deployment]
 run = ["sh", "-c", "php -S 0.0.0.0:5000"]
