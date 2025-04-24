@@ -11,7 +11,7 @@
             margin: 0 auto;
             padding: 20px;
         }
-        
+
         .config-section {
             background-color: #fff;
             border-radius: 8px;
@@ -19,37 +19,37 @@
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        
+
         .config-section h2 {
             margin-top: 0;
             color: #4f46e5;
             border-bottom: 1px solid #e5e7eb;
             padding-bottom: 10px;
         }
-        
+
         .config-form {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
-        
+
         @media (max-width: 600px) {
             .config-form {
                 grid-template-columns: 1fr;
             }
         }
-        
+
         .form-group {
             margin-bottom: 15px;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: 500;
             color: #111827;
         }
-        
+
         .form-group input, .form-group select {
             width: 100%;
             padding: 8px 12px;
@@ -57,20 +57,20 @@
             border-radius: 4px;
             font-size: 14px;
         }
-        
+
         .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: #4f46e5;
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
-        
+
         .form-group .hint {
             display: block;
             font-size: 12px;
             color: #6b7280;
             margin-top: 4px;
         }
-        
+
         .form-actions {
             grid-column: 1 / -1;
             display: flex;
@@ -78,7 +78,7 @@
             gap: 10px;
             margin-top: 10px;
         }
-        
+
         button {
             padding: 8px 16px;
             background-color: #4f46e5;
@@ -89,45 +89,45 @@
             font-size: 14px;
             font-weight: 500;
         }
-        
+
         button:hover {
             background-color: #4338ca;
         }
-        
+
         button.secondary-btn {
             background-color: #f3f4f6;
             color: #111827;
             border: 1px solid #d1d5db;
         }
-        
+
         button.secondary-btn:hover {
             background-color: #e5e7eb;
         }
-        
+
         .status {
             padding: 10px;
             margin-top: 10px;
             border-radius: 4px;
         }
-        
+
         .status.success {
             background-color: #ecfdf5;
             color: #047857;
             border: 1px solid #a7f3d0;
         }
-        
+
         .status.error {
             background-color: #fef2f2;
             color: #b91c1c;
             border: 1px solid #fecaca;
         }
-        
+
         .status.warning {
             background-color: #fffbeb;
             color: #92400e;
             border: 1px solid #fde68a;
         }
-        
+
         .navbar {
             background-color: #1e293b;
             padding: 10px 20px;
@@ -135,25 +135,25 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .navbar-brand {
             color: white;
             font-weight: bold;
             font-size: 18px;
             text-decoration: none;
         }
-        
+
         .navbar-links {
             display: flex;
             gap: 20px;
         }
-        
+
         .navbar-link {
             color: #e5e7eb;
             text-decoration: none;
             font-size: 14px;
         }
-        
+
         .navbar-link:hover {
             color: white;
             text-decoration: underline;
@@ -168,113 +168,137 @@
             <a href="config.html" class="navbar-link">Configuration</a>
         </div>
     </nav>
-    
+
     <div class="config-container">
         <h1>Voice Changer Configuration</h1>
-        
+
         <div class="config-section">
             <h2>Asterisk PBX Configuration</h2>
             <p>Configure your Asterisk PBX connection details to enable phone call functionality with voice transformation.</p>
-            
+
             <div id="asteriskStatus" class="status warning">
                 Checking Asterisk connection status...
             </div>
-            
+
             <form id="asteriskForm" class="config-form">
                 <div class="form-group">
                     <label for="asteriskHost">Asterisk Host</label>
                     <input type="text" id="asteriskHost" name="asteriskHost" placeholder="IP address or hostname">
                     <span class="hint">The IP address or hostname of your Asterisk server</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="asteriskPort">AMI Port</label>
                     <input type="number" id="asteriskPort" name="asteriskPort" placeholder="5038" value="5038">
                     <span class="hint">Asterisk Manager Interface port (default: 5038)</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="asteriskUsername">AMI Username</label>
                     <input type="text" id="asteriskUsername" name="asteriskUsername" placeholder="admin">
                     <span class="hint">Username for Asterisk Manager Interface</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="asteriskSecret">AMI Secret</label>
                     <input type="password" id="asteriskSecret" name="asteriskSecret" placeholder="Password">
                     <span class="hint">Password for Asterisk Manager Interface</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="asteriskContext">Dialplan Context</label>
                     <input type="text" id="asteriskContext" name="asteriskContext" placeholder="from-internal" value="from-internal">
                     <span class="hint">The dialplan context to use for outgoing calls</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="asteriskExtension">Extension</label>
                     <input type="text" id="asteriskExtension" name="asteriskExtension" placeholder="1000" value="1000">
                     <span class="hint">The extension to use as the caller ID</span>
                 </div>
-                
+
                 <div class="form-actions">
                     <button type="button" id="testAsteriskBtn" class="secondary-btn">Test Connection</button>
                     <button type="submit" id="saveAsteriskBtn">Save Configuration</button>
                 </div>
             </form>
         </div>
-        
+
         <div class="config-section">
             <h2>FastAGI Server Configuration</h2>
             <p>Configure the FastAGI server that handles voice transformation during calls.</p>
-            
+
             <div id="agiStatus" class="status warning">
                 Checking AGI server status...
             </div>
-            
+
             <form id="agiForm" class="config-form">
                 <div class="form-group">
                     <label for="agiHost">AGI Host</label>
                     <input type="text" id="agiHost" name="agiHost" placeholder="0.0.0.0" value="0.0.0.0">
                     <span class="hint">The IP address to bind the AGI server to (0.0.0.0 for all interfaces)</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="agiPort">AGI Port</label>
                     <input type="number" id="agiPort" name="agiPort" placeholder="4573" value="4573">
                     <span class="hint">The port to bind the AGI server to (default: 4573)</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="voiceCacheTimeout">Voice Cache Timeout</label>
                     <input type="number" id="voiceCacheTimeout" name="voiceCacheTimeout" placeholder="300" value="300">
                     <span class="hint">How long to cache voice parameters in seconds (default: 300)</span>
                 </div>
-                
+
                 <div class="form-actions">
                     <button type="button" id="restartAgiBtn" class="secondary-btn">Restart AGI Server</button>
                     <button type="submit" id="saveAgiBtn">Save Configuration</button>
                 </div>
             </form>
         </div>
-        
+
+        <div class="config-section">
+            <h2>Platform Integrations</h2>
+            <form id="platformForm" class="config-form">
+                <div class="form-group">
+                    <label for="virtualNumberPlatform">Virtual Number Platform</label>
+                    <select id="virtualNumberPlatform" name="virtualNumberPlatform">
+                        <option value="asterisk">Asterisk</option>
+                        </select>
+                    <span class="hint">Select the platform for virtual number functions.</span>
+                </div>
+                <div class="form-group">
+                    <label for="smsProvider">SMS Provider</label>
+                    <select id="smsProvider" name="smsProvider">
+                        <option value="asterisk">Asterisk</option>
+                        </select>
+                    <span class="hint">Select the platform for SMS functionality.</span>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" id="savePlatformBtn">Save Platform Integrations</button>
+                </div>
+            </form>
+        </div>
+
+
         <div class="config-section">
             <h2>Voice Transformation Settings</h2>
             <p>Configure global settings for voice transformation.</p>
-            
+
             <form id="voiceForm" class="config-form">
                 <div class="form-group">
                     <label for="defaultPitchRange">Default Pitch Range</label>
                     <input type="number" id="defaultPitchRange" name="defaultPitchRange" placeholder="12" value="12">
                     <span class="hint">Maximum semitones for pitch shifting (default: 12)</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="defaultFormantRange">Default Formant Range</label>
                     <input type="number" id="defaultFormantRange" name="defaultFormantRange" placeholder="100" value="100">
                     <span class="hint">Maximum value for formant shifting (default: 100)</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="enabledEffects">Enabled Effects</label>
                     <select id="enabledEffects" name="enabledEffects" multiple>
@@ -286,14 +310,14 @@
                     </select>
                     <span class="hint">Hold Ctrl/Cmd to select multiple effects</span>
                 </div>
-                
+
                 <div class="form-actions">
                     <button type="submit" id="saveVoiceBtn">Save Settings</button>
                 </div>
             </form>
         </div>
     </div>
-    
+
     <script src="../js/utils.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -301,37 +325,43 @@
         loadAsteriskConfig();
         loadAgiConfig();
         loadVoiceConfig();
-        
+        loadPlatformConfig(); // Load platform configurations
+
         // Check connection statuses
         checkAsteriskStatus();
         checkAgiStatus();
-        
+
         // Set up form submission handlers
         document.getElementById('asteriskForm').addEventListener('submit', function(e) {
             e.preventDefault();
             saveAsteriskConfig();
         });
-        
+
         document.getElementById('agiForm').addEventListener('submit', function(e) {
             e.preventDefault();
             saveAgiConfig();
         });
-        
+
         document.getElementById('voiceForm').addEventListener('submit', function(e) {
             e.preventDefault();
             saveVoiceConfig();
         });
-        
+
+        document.getElementById('platformForm').addEventListener('submit', function(e) { // Add event listener for platform form
+            e.preventDefault();
+            savePlatformConfig();
+        });
+
         // Set up button click handlers
         document.getElementById('testAsteriskBtn').addEventListener('click', function() {
             testAsteriskConnection();
         });
-        
+
         document.getElementById('restartAgiBtn').addEventListener('click', function() {
             restartAgiServer();
         });
     });
-    
+
     // Function to load Asterisk configuration from localStorage
     function loadAsteriskConfig() {
         const config = JSON.parse(localStorage.getItem('asteriskConfig') || '{}');
@@ -342,7 +372,7 @@
         document.getElementById('asteriskContext').value = config.context || 'from-internal';
         document.getElementById('asteriskExtension').value = config.extension || '1000';
     }
-    
+
     // Function to save Asterisk configuration to localStorage
     function saveAsteriskConfig() {
         const config = {
@@ -353,9 +383,9 @@
             context: document.getElementById('asteriskContext').value,
             extension: document.getElementById('asteriskExtension').value
         };
-        
+
         localStorage.setItem('asteriskConfig', JSON.stringify(config));
-        
+
         // Send the configuration to the server
         fetch('/api_proxy.php/config/asterisk', {
             method: 'POST',
@@ -378,13 +408,13 @@
             console.error('Error saving Asterisk configuration:', error);
         });
     }
-    
+
     // Function to test Asterisk connection
     function testAsteriskConnection() {
         const statusElement = document.getElementById('asteriskStatus');
         statusElement.className = 'status warning';
         statusElement.textContent = 'Testing Asterisk connection...';
-        
+
         fetch('/api_proxy.php/config/asterisk/test', {
             method: 'POST',
             headers: {
@@ -413,11 +443,11 @@
             console.error('Error testing Asterisk connection:', error);
         });
     }
-    
+
     // Function to check Asterisk connection status
     function checkAsteriskStatus() {
         const statusElement = document.getElementById('asteriskStatus');
-        
+
         fetch('/api_proxy.php/config/asterisk/status')
         .then(response => response.json())
         .then(data => {
@@ -440,7 +470,7 @@
             console.error('Error checking Asterisk status:', error);
         });
     }
-    
+
     // Function to load AGI configuration from localStorage
     function loadAgiConfig() {
         const config = JSON.parse(localStorage.getItem('agiConfig') || '{}');
@@ -448,7 +478,7 @@
         document.getElementById('agiPort').value = config.port || '4573';
         document.getElementById('voiceCacheTimeout').value = config.cacheTimeout || '300';
     }
-    
+
     // Function to save AGI configuration to localStorage
     function saveAgiConfig() {
         const config = {
@@ -456,9 +486,9 @@
             port: document.getElementById('agiPort').value,
             cacheTimeout: document.getElementById('voiceCacheTimeout').value
         };
-        
+
         localStorage.setItem('agiConfig', JSON.stringify(config));
-        
+
         // Send the configuration to the server
         fetch('/api_proxy.php/config/agi', {
             method: 'POST',
@@ -481,7 +511,7 @@
             console.error('Error saving AGI configuration:', error);
         });
     }
-    
+
     // Function to restart the AGI server
     function restartAgiServer() {
         fetch('/api_proxy.php/config/agi/restart', {
@@ -501,11 +531,11 @@
             console.error('Error restarting AGI server:', error);
         });
     }
-    
+
     // Function to check AGI server status
     function checkAgiStatus() {
         const statusElement = document.getElementById('agiStatus');
-        
+
         fetch('/api_proxy.php/config/agi/status')
         .then(response => response.json())
         .then(data => {
@@ -523,36 +553,36 @@
             console.error('Error checking AGI server status:', error);
         });
     }
-    
+
     // Function to load voice configuration from localStorage
     function loadVoiceConfig() {
         const config = JSON.parse(localStorage.getItem('voiceConfig') || '{}');
         document.getElementById('defaultPitchRange').value = config.pitchRange || '12';
         document.getElementById('defaultFormantRange').value = config.formantRange || '100';
-        
+
         const effectsSelect = document.getElementById('enabledEffects');
         const enabledEffects = config.enabledEffects || ['reverb', 'echo', 'robot', 'alien', 'chorus'];
-        
+
         // Select the enabled effects
         for (let i = 0; i < effectsSelect.options.length; i++) {
             const option = effectsSelect.options[i];
             option.selected = enabledEffects.includes(option.value);
         }
     }
-    
+
     // Function to save voice configuration to localStorage
     function saveVoiceConfig() {
         const effectsSelect = document.getElementById('enabledEffects');
         const enabledEffects = Array.from(effectsSelect.selectedOptions).map(option => option.value);
-        
+
         const config = {
             pitchRange: document.getElementById('defaultPitchRange').value,
             formantRange: document.getElementById('defaultFormantRange').value,
             enabledEffects: enabledEffects
         };
-        
+
         localStorage.setItem('voiceConfig', JSON.stringify(config));
-        
+
         // Send the configuration to the server
         fetch('/api_proxy.php/config/voice', {
             method: 'POST',
@@ -572,6 +602,44 @@
         .catch(error => {
             Utils.showError('Error saving voice configuration: ' + error.message);
             console.error('Error saving voice configuration:', error);
+        });
+    }
+
+    // Function to load platform configuration
+    function loadPlatformConfig() {
+        const config = JSON.parse(localStorage.getItem('platformConfig') || '{}');
+        document.getElementById('virtualNumberPlatform').value = config.virtualNumberPlatform || 'asterisk';
+        document.getElementById('smsProvider').value = config.smsProvider || 'asterisk';
+    }
+
+    // Function to save platform configuration
+    function savePlatformConfig() {
+        const config = {
+            virtualNumberPlatform: document.getElementById('virtualNumberPlatform').value,
+            smsProvider: document.getElementById('smsProvider').value
+        };
+
+        localStorage.setItem('platformConfig', JSON.stringify(config));
+
+        // Send to backend
+        fetch('/api_proxy.php/config/platforms', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(config)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Utils.showSuccess('Platform configuration saved successfully!');
+            } else {
+                Utils.showError('Failed to save platform configuration: ' + data.message);
+            }
+        })
+        .catch(error => {
+            Utils.showError('Error saving platform configuration: ' + error.message);
+            console.error('Error saving platform configuration:', error);
         });
     }
     </script>

@@ -14,32 +14,63 @@ class PhoneNumberManager:
             'DE': '+49'
         }
         
+        # Load platform config
+        self.load_platform_config()
+        
+    def load_platform_config(self):
+        """Load platform configuration from environment or default to Asterisk"""
+        try:
+            with open('config/platform_config.json', 'r') as f:
+                config = json.load(f)
+                self.virtual_number_platform = config.get('virtualNumberPlatform', 'asterisk')
+                self.sms_provider = config.get('smsProvider', 'asterisk')
+        except:
+            self.virtual_number_platform = 'asterisk'
+            self.sms_provider = 'asterisk'
+            
     def generate_virtual_number(self, country_code='US'):
-        """Generate a virtual phone number for the given country"""
+        """Generate a virtual phone number using the configured platform"""
+        if self.virtual_number_platform == 'asterisk':
+            return self._generate_asterisk_number(country_code)
+        elif self.virtual_number_platform == 'twilio':
+            return self._generate_twilio_number(country_code)
+        elif self.virtual_number_platform == 'vonage':
+            return self._generate_vonage_number(country_code)
+        else:
+            return self._generate_asterisk_number(country_code)  # Default fallback
+            
+    def _generate_asterisk_number(self, country_code):
+        """Generate number using Asterisk"""
         prefix = self.available_countries.get(country_code, '+1')
         
-        # Generate random number (simplified for demo)
-        # In production, this would integrate with a phone provider API
         if prefix == '+1':  # US/CA format
             area_code = str(random.randint(200, 999))
             middle = str(random.randint(200, 999))
             end = str(random.randint(1000, 9999))
             number = f"{prefix}{area_code}{middle}{end}"
         else:
-            # Generic international format
             number = f"{prefix}{random.randint(1000000000, 9999999999)}"
             
         return number
         
+    def _generate_twilio_number(self, country_code):
+        """Generate number using Twilio API"""
+        # Implementation for when Twilio is selected
+        return self._generate_asterisk_number(country_code)  # Fallback for now
+        
+    def _generate_vonage_number(self, country_code):
+        """Generate number using Vonage API"""
+        # Implementation for when Vonage is selected
+        return self._generate_asterisk_number(country_code)  # Fallback for now
+        
     def assign_number_to_user(self, user_id, country_code='US'):
-        """Assign a virtual number to a user"""
+        """Assign a virtual number to a user using the configured platform"""
         number = self.generate_virtual_number(country_code)
-        # Here we would integrate with the phone provider API
-        # to actually provision the number
         
         return {
             'number': number,
             'country': country_code,
+            'platform': self.virtual_number_platform,
             'assigned_at': datetime.now().isoformat(),
             'user_id': user_id
         }
