@@ -115,19 +115,19 @@ const Utils = {
     },
     
     /**
-     * Shows the Twilio keys needed modal
+     * Shows the Asterisk connection modal
      * @param {Function} callback - Function to call when user acknowledges
      */
-    showTwilioKeysNeededModal: function(callback) {
-        this.twilioKeysCallback = callback;
+    showAsteriskKeysNeededModal: function(callback) {
+        this.asteriskKeysCallback = callback;
         
         // Create the modal if it doesn't exist
-        let twilioModal = document.getElementById('twilioKeysModal');
+        let asteriskModal = document.getElementById('asteriskKeysModal');
         
-        if (!twilioModal) {
-            twilioModal = document.createElement('div');
-            twilioModal.id = 'twilioKeysModal';
-            twilioModal.className = 'modal';
+        if (!asteriskModal) {
+            asteriskModal = document.createElement('div');
+            asteriskModal.id = 'asteriskKeysModal';
+            asteriskModal.className = 'modal';
             
             const modalContent = document.createElement('div');
             modalContent.className = 'modal-content';
@@ -136,27 +136,29 @@ const Utils = {
             closeBtn.className = 'close-modal';
             closeBtn.innerHTML = '&times;';
             closeBtn.onclick = () => {
-                twilioModal.style.display = 'none';
+                asteriskModal.style.display = 'none';
             };
             
             const heading = document.createElement('h2');
-            heading.innerHTML = '<i class="fas fa-key"></i> Twilio Account Needed';
+            heading.innerHTML = '<i class="fas fa-key"></i> Asterisk Connection Details';
             
             const message = document.createElement('p');
-            message.innerHTML = 'To make phone calls, you need a Twilio account with the following credentials:';
+            message.innerHTML = 'To make phone calls using Asterisk, you need the following connection details:';
             
             const keysList = document.createElement('ul');
             keysList.innerHTML = `
-                <li><strong>TWILIO_ACCOUNT_SID</strong> - Your Twilio account identifier</li>
-                <li><strong>TWILIO_AUTH_TOKEN</strong> - Your Twilio authentication token</li>
-                <li><strong>TWILIO_PHONE_NUMBER</strong> - A Twilio phone number to make calls from</li>
+                <li><strong>ASTERISK_HOST</strong> - The hostname or IP address of your Asterisk server</li>
+                <li><strong>ASTERISK_PORT</strong> - The AMI (Asterisk Manager Interface) port (default: 5038)</li>
+                <li><strong>ASTERISK_USERNAME</strong> - Your Asterisk manager username</li>
+                <li><strong>ASTERISK_SECRET</strong> - Your Asterisk manager secret/password</li>
+                <li><strong>ASTERISK_CONTEXT</strong> - The Asterisk dialplan context to use (default: from-internal)</li>
             `;
             
-            const signupLink = document.createElement('p');
-            signupLink.innerHTML = 'You can sign up for a Twilio account at <a href="https://www.twilio.com/try-twilio" target="_blank">www.twilio.com</a>';
+            const setupLink = document.createElement('p');
+            setupLink.innerHTML = 'You need to have access to an Asterisk PBX server. Learn how to set up Asterisk at <a href="https://www.asterisk.org/get-started/" target="_blank">asterisk.org</a>';
             
             const formMessage = document.createElement('p');
-            formMessage.textContent = 'After you have these credentials, return here to connect your account.';
+            formMessage.textContent = 'After you have your Asterisk server configured, return here to connect to it.';
             
             const buttonContainer = document.createElement('div');
             buttonContainer.className = 'form-actions';
@@ -165,17 +167,17 @@ const Utils = {
             cancelBtn.className = 'secondary-btn';
             cancelBtn.textContent = 'Cancel';
             cancelBtn.onclick = () => {
-                twilioModal.style.display = 'none';
+                asteriskModal.style.display = 'none';
             };
             
             const proceedBtn = document.createElement('button');
             proceedBtn.className = 'primary-btn';
-            proceedBtn.textContent = 'I have Twilio keys';
+            proceedBtn.textContent = 'I have Asterisk connection details';
             proceedBtn.onclick = () => {
-                twilioModal.style.display = 'none';
+                asteriskModal.style.display = 'none';
                 // Proceed with the callback
-                if (typeof this.twilioKeysCallback === 'function') {
-                    this.twilioKeysCallback();
+                if (typeof this.asteriskKeysCallback === 'function') {
+                    this.asteriskKeysCallback();
                 }
             };
             
@@ -186,16 +188,24 @@ const Utils = {
             modalContent.appendChild(heading);
             modalContent.appendChild(message);
             modalContent.appendChild(keysList);
-            modalContent.appendChild(signupLink);
+            modalContent.appendChild(setupLink);
             modalContent.appendChild(formMessage);
             modalContent.appendChild(buttonContainer);
             
-            twilioModal.appendChild(modalContent);
-            document.body.appendChild(twilioModal);
+            asteriskModal.appendChild(modalContent);
+            document.body.appendChild(asteriskModal);
         }
         
         // Show the modal
-        twilioModal.style.display = 'flex';
+        asteriskModal.style.display = 'flex';
+    },
+    
+    /**
+     * Alias for the Asterisk modal (for backward compatibility)
+     * @param {Function} callback - Function to call when user acknowledges
+     */
+    showTwilioKeysNeededModal: function(callback) {
+        this.showAsteriskKeysNeededModal(callback);
     },
     
     /**

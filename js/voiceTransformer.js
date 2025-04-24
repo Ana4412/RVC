@@ -450,50 +450,68 @@ class VoiceTransformer {
                 };
             }
             
-            console.log(`Starting call to ${formattedNumber} with voice ${voice.name}`);
+            console.log(`Starting Asterisk call to ${formattedNumber} with voice ${voice.name}`);
             
-            // Check if we have Twilio credentials
-            const hasTwilioCredentials = await this.checkTwilioCredentials();
+            // Check if we have Asterisk credentials
+            const hasAsteriskCredentials = await this.checkAsteriskCredentials();
             
             // If no credentials, prompt to get them but pretend the call succeeded for testing
-            if (!hasTwilioCredentials) {
-                // Generate a fake call SID
-                const callSid = 'CA' + Math.random().toString(36).substring(2, 15);
+            if (!hasAsteriskCredentials) {
+                // Generate a fake call ID
+                const callId = 'AST-' + Math.random().toString(36).substring(2, 15);
                 
                 return {
                     success: true,
-                    call_sid: callSid,
-                    message: `Demo call mode: Simulated call to ${formattedNumber}`
+                    call_sid: callId,
+                    message: `Demo mode: Simulated Asterisk call to ${formattedNumber}`
                 };
             }
             
             // Try to make the API call if the server is up
             try {
-                const response = await fetch('/api/call/start', {
+                const response = await fetch('/api/asterisk/originate', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        phone_number: phoneNumber,
-                        voice_id: voiceId
+                        phone_number: formattedNumber,
+                        voice_id: voiceId,
+                        // Asterisk specific parameters
+                        context: 'from-internal',
+                        extension: formattedNumber,
+                        priority: 1,
+                        // Voice parameters for the call
+                        voice_parameters: {
+                            pitch: voice.parameters?.pitch || 0,
+                            formant: voice.parameters?.formant || 0,
+                            effect: voice.parameters?.effect || 'none',
+                            accent: voice.accent || 'neutral'
+                        }
                     })
                 });
                 
                 if (response.ok) {
-                    return await response.json();
+                    const result = await response.json();
+                    return {
+                        success: true,
+                        call_sid: result.call_id || result.uniqueid,
+                        message: result.message || `Asterisk call initiated to ${formattedNumber}`
+                    };
+                } else {
+                    throw new Error(`API returned status ${response.status}`);
                 }
             } catch (apiError) {
-                console.log('API call failed, falling back to simulation mode');
+                console.log('Asterisk API call failed, falling back to simulation mode:', apiError.message);
             }
             
             // Fall back to simulation if API call fails
-            const callSid = 'CA' + Math.random().toString(36).substring(2, 15);
+            const callId = 'AST-' + Math.random().toString(36).substring(2, 15);
             
             return {
                 success: true,
-                call_sid: callSid,
-                message: `Call started successfully to ${formattedNumber}`
+                call_sid: callId,
+                message: `Demo mode: Simulated Asterisk call to ${formattedNumber} (API fallback)`
             };
         } catch (error) {
             console.error('Error starting phone call:', error);
@@ -505,27 +523,35 @@ class VoiceTransformer {
     }
     
     /**
-     * Check if Twilio credentials are configured
-     * @returns {Promise<boolean>} Whether Twilio credentials are available
+     * Check if Asterisk connection details are configured
+     * @returns {Promise<boolean>} Whether Asterisk connection is available
      */
-    async checkTwilioCredentials() {
+    async checkAsteriskCredentials() {
         try {
             // In a real implementation, this would check for the presence of
             // environment variables or stored credentials
-            // For now, we'll request the keys and show a message
+            // For now, we'll request the connection details and show a message
             
-            // Prompt to request Twilio keys
-            console.log('Requesting Twilio keys');
+            // Prompt to request Asterisk connection details
+            console.log('Requesting Asterisk connection details');
             // Note: In a real implementation, we would make an AJAX request
             // to a backend endpoint that would check for the presence of
-            // TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER
+            // ASTERISK_HOST, ASTERISK_PORT, ASTERISK_USERNAME, ASTERISK_SECRET, and ASTERISK_CONTEXT
             
-            // For now, always return false to show the keys message
+            // For now, always return false to show the connection details message
             return false;
         } catch (error) {
-            console.error('Error checking Twilio credentials:', error);
+            console.error('Error checking Asterisk connection:', error);
             return false;
         }
+    }
+    
+    /**
+     * Alias for backward compatibility
+     * @returns {Promise<boolean>} Whether phone call credentials are available
+     */
+    async checkTwilioCredentials() {
+        return this.checkAsteriskCredentials();
     }
     
     /**
