@@ -357,7 +357,7 @@ class VoiceTransformer {
         try {
             // First try the new API endpoint
             try {
-                const response = await fetch(`/api/voices/${voiceId}`, {
+                const response = await fetch(`/api_proxy.php/voices/${voiceId}`, {
                     method: 'DELETE'
                 });
                 
