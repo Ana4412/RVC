@@ -5,7 +5,7 @@ import traceback
 from flask import Flask, request, jsonify, render_template, redirect, url_for
 from backend.debug_bot import DebugBot
 
-app = Flask(__name__, template_folder='..', static_folder='..')
+app = Flask(__name__, template_folder='..', static_folder='..', static_url_path='')
 
 @app.route('/')
 def home():
@@ -19,7 +19,6 @@ def handle_error(error):
         'success': False,
         'error': str(error)
     }), 500
-debug_bot = DebugBot()
 
 @app.route('/api/debug/run', methods=['POST'])
 def run_debug():
