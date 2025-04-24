@@ -3,8 +3,37 @@ import json
 from flask import Flask, request, jsonify, render_template, redirect, url_for
 from backend import models
 from backend.phone import PhoneCallManager
+from backend.phone_numbers import PhoneNumberManager
 
 app = Flask(__name__)
+phone_number_manager = PhoneNumberManager()
+
+# Virtual Number Routes
+@app.route('/api/numbers/generate', methods=['POST'])
+def generate_number():
+    """Generate a virtual phone number"""
+    data = request.get_json()
+    user_id = data.get('user_id')
+    country_code = data.get('country', 'US')
+    
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
+        
+    try:
+        number_data = phone_number_manager.assign_number_to_user(user_id, country_code)
+        return jsonify(number_data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/numbers/user/<user_id>', methods=['GET'])
+def get_user_numbers(user_id):
+    """Get virtual numbers assigned to a user"""
+    # In production, this would fetch from a database
+    return jsonify({
+        'numbers': [
+            phone_number_manager.assign_number_to_user(user_id)
+        ]
+    })
 
 # Initialize the phone call manager
 phone_manager = PhoneCallManager()
