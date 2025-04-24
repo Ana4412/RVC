@@ -93,8 +93,31 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Start the voice changer
     async function startVoiceChanger() {
-        // Show permission modal first
-        Utils.showPermissionModal(async () => {
+        try {
+            // Check if we already have permission
+            const permissionStatus = await navigator.permissions.query({ name: 'microphone' });
+            
+            if (permissionStatus.state === 'denied') {
+                Utils.showError('Microphone access is blocked. Please allow access in your browser settings.');
+                return;
+            }
+            
+            // Show permission modal first if not granted
+            if (permissionStatus.state === 'prompt') {
+                Utils.showPermissionModal(async () => {
+                    await initializeAudioSystem();
+                });
+            } else {
+                await initializeAudioSystem();
+            }
+        } catch (error) {
+            console.error('Permission check failed:', error);
+            Utils.showError('Failed to check microphone permissions: ' + error.message);
+        }
+    }
+    
+    async function initializeAudioSystem() {
+        try {
             // Resume audio context (needed due to autoplay policies)
             await audioProcessor.resumeAudioContext();
             

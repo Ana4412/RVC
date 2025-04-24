@@ -6,18 +6,19 @@
 }
 
 :root {
-    --primary-color: #4f46e5;
-    --primary-hover: #4338ca;
-    --secondary-color: #f0f9ff;
-    --text-color: #1e293b;
+    --primary-color: #6366f1;
+    --primary-hover: #4f46e5;
+    --secondary-color: #f1f5f9;
+    --text-color: #0f172a;
     --light-text: #64748b;
     --danger-color: #ef4444;
     --success-color: #10b981;
     --warning-color: #f59e0b;
     --border-color: #e2e8f0;
-    --background-light: #f8fafc;
-    --background-dark: #0f172a;
+    --background-light: #ffffff;
+    --background-dark: #1e293b;
     --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --gradient: linear-gradient(135deg, var(--primary-color), #818cf8);
     --transition: all 0.3s ease;
 }
 

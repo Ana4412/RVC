@@ -96,7 +96,16 @@ class AudioProcessor {
         if (this.isActive) return;
         
         try {
-            // Request access to the microphone
+            // Check audio context state
+            if (!this.audioContext) {
+                throw new Error('Audio context not initialized');
+            }
+            
+            if (this.audioContext.state === 'suspended') {
+                await this.audioContext.resume();
+            }
+            
+            // Request access to the microphone with specific constraints
             this.microphoneStream = await navigator.mediaDevices.getUserMedia({
                 audio: {
                     echoCancellation: false,

@@ -246,8 +246,19 @@
     <div id="permissionModal" class="modal">
         <div class="modal-content">
             <h2><i class="fas fa-microphone"></i> Microphone Access Required</h2>
-            <p>This application needs access to your microphone to function. Please allow microphone access when prompted.</p>
-            <button id="permissionOkBtn" class="primary-btn">Got it</button>
+            <p>This application needs access to your microphone for:</p>
+            <ul class="permission-list">
+                <li><i class="fas fa-check"></i> Voice transformation</li>
+                <li><i class="fas fa-check"></i> Real-time call management</li>
+                <li><i class="fas fa-check"></i> Audio visualization</li>
+            </ul>
+            <p class="permission-note">Your privacy is important. We only use the microphone when you activate it.</p>
+            <button id="permissionOkBtn" class="primary-btn">
+                <i class="fas fa-check-circle"></i> Allow Access
+            </button>
+            <button id="permissionCancelBtn" class="secondary-btn">
+                <i class="fas fa-times-circle"></i> Maybe Later
+            </button>
         </div>
     </div>
     
