@@ -40,18 +40,37 @@ class PhoneNumberManager:
             return self._generate_asterisk_number(country_code)  # Default fallback
             
     def _generate_asterisk_number(self, country_code):
-        """Generate number using Asterisk"""
+        """Generate number using Asterisk with validation"""
         prefix = self.available_countries.get(country_code, '+1')
         
-        if prefix == '+1':  # US/CA format
-            area_code = str(random.randint(200, 999))
-            middle = str(random.randint(200, 999))
-            end = str(random.randint(1000, 9999))
-            number = f"{prefix}{area_code}{middle}{end}"
-        else:
-            number = f"{prefix}{random.randint(1000000000, 9999999999)}"
+        for _ in range(4):  # Try up to 4 times to generate a valid number
+            if prefix == '+1':  # US/CA format
+                area_code = str(random.randint(200, 999))
+                middle = str(random.randint(200, 999))
+                end = str(random.randint(1000, 9999))
+                number = f"{prefix}{area_code}{middle}{end}"
+            else:
+                number = f"{prefix}{random.randint(1000000000, 9999999999)}"
+                
+            # Validate the number
+            if self._validate_asterisk_number(number):
+                return number
+                
+        # If we couldn't generate a valid number after 4 tries
+        raise Exception("Could not generate valid Asterisk number")
+        
+    def _validate_asterisk_number(self, number):
+        """Validate number format and check Asterisk availability"""
+        # Basic format validation
+        if not number or len(number) < 10:
+            return False
             
-        return number
+        try:
+            # Check if number is registered in Asterisk
+            # This would integrate with your Asterisk server
+            return True  # Placeholder - implement actual check
+        except Exception:
+            return False
         
     def _generate_twilio_number(self, country_code):
         """Generate number using Twilio API"""

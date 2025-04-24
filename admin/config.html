@@ -194,6 +194,45 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="platformSelect">Default Platform</label>
+                    <select id="platformSelect" name="platform">
+                        <option value="asterisk">Asterisk (Default)</option>
+                        <option value="twilio">Twilio</option>
+                        <option value="vonage">Vonage</option>
+                    </select>
+                    <span class="hint">Select the default platform for virtual numbers</span>
+                </div>
+
+                <div class="form-group">
+                    <label>Feature Platforms</label>
+                    <div class="platform-options">
+                        <div class="platform-option">
+                            <label>Voice Transformation:</label>
+                            <select name="voicePlatform">
+                                <option value="asterisk">Asterisk</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        <div class="platform-option">
+                            <label>Virtual Numbers:</label>
+                            <select name="numbersPlatform">
+                                <option value="asterisk">Asterisk</option>
+                                <option value="twilio">Twilio</option>
+                                <option value="vonage">Vonage</option>
+                            </select>
+                        </div>
+                        <div class="platform-option">
+                            <label>SMS:</label>
+                            <select name="smsPlatform">
+                                <option value="asterisk">Asterisk</option>
+                                <option value="twilio">Twilio</option>
+                                <option value="vonage">Vonage</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label for="asteriskUsername">AMI Username</label>
                     <input type="text" id="asteriskUsername" name="asteriskUsername" placeholder="admin">
                     <span class="hint">Username for Asterisk Manager Interface</span>
