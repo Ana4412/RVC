@@ -1,7 +1,7 @@
 import os
 from twilio.rest import Client
 from twilio.twiml.voice_response import VoiceResponse, Gather
-import models
+from backend import models
 
 # Twilio credentials
 TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')

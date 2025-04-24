@@ -119,40 +119,14 @@ class VoiceTransformer {
      */
     async loadCelebrityVoices() {
         try {
-            // Try the API endpoint
-            try {
-                const response = await fetch('/api/voices/celebrity');
-                if (response.ok) {
-                    const voiceData = await response.json();
-                    
-                    // Store each voice model
-                    voiceData.forEach(voice => {
-                        this.celebrityVoices.set(voice.id.toString(), {
-                            id: voice.id.toString(),
-                            name: voice.name,
-                            type: voice.type || 'celebrity',
-                            accent: voice.accent,
-                            is_celebrity: true,
-                            parameters: voice.parameters || {
-                                pitch: 0,
-                                formant: 0,
-                                effect: 'none'
-                            }
-                        });
-                    });
-                    
-                    return true;
-                }
-            } catch (apiError) {
-                console.log('Celebrity API endpoint not available, falling back to local data');
-            }
-            
-            // If API endpoint is not available, load from hardcoded data
+            // Skip the API endpoint since we know it's not working
+            console.log('Loading celebrity voices from hardcoded data');
             this.loadDefaultCelebrityVoices();
+            console.log(`Loaded ${this.celebrityVoices.size} celebrity voices`);
             return true;
         } catch (error) {
             console.error('Error loading celebrity voices:', error);
-            // Fall back to hardcoded data
+            // Make sure we always have the default celebrity voices
             this.loadDefaultCelebrityVoices();
             return false;
         }

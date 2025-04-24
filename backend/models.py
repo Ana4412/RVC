@@ -314,8 +314,39 @@ def add_celebrity_voices(celebrity_voices):
         conn = get_db_connection()
         cur = conn.cursor()
         
+        # First, check if we already have a name column constraint
+        cur.execute("""
+            SELECT count(*) FROM pg_constraint 
+            WHERE conname = 'voices_name_key' AND conrelid = 'voices'::regclass
+        """)
+        
+        has_constraint = cur.fetchone()[0] > 0
+        
+        # If no constraint exists, try to add one
+        if not has_constraint:
+            try:
+                cur.execute("""
+                    ALTER TABLE voices ADD CONSTRAINT voices_name_key UNIQUE (name)
+                """)
+                print("Added unique constraint on name column")
+            except Exception as constraint_error:
+                print(f"Could not add constraint: {constraint_error}")
+                # Continue anyway, we'll just handle duplicates manually
+        
+        # Get existing voice names
+        cur.execute("SELECT name FROM voices")
+        existing_names = set(row[0] for row in cur.fetchall())
+        
+        voices_added = 0
+        
         for voice in celebrity_voices:
             name = voice.get('name')
+            
+            # Skip if name already exists
+            if name in existing_names:
+                print(f"Voice '{name}' already exists, skipping")
+                continue
+                
             voice_type = voice.get('type', 'celebrity')
             accent = voice.get('accent', 'neutral')
             parameters = voice.get('parameters', {})
@@ -324,12 +355,16 @@ def add_celebrity_voices(celebrity_voices):
             if parameters and isinstance(parameters, dict):
                 parameters = json.dumps(parameters)
             
+            # Simple insert without conflict handling
             cur.execute("""
                 INSERT INTO voices (name, type, accent, is_celebrity, parameters)
                 VALUES (%s, %s, %s, TRUE, %s)
-                ON CONFLICT (name) DO NOTHING
             """, (name, voice_type, accent, parameters))
+            
+            voices_added += 1
+            existing_names.add(name)  # Add to our tracking set
         
+        print(f"Added {voices_added} new celebrity voices")
         return True
     except Exception as e:
         print(f"Database error: {e}")

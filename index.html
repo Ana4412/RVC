@@ -16,7 +16,7 @@
     <div class="container">
         <header>
             <h1>Real-Time Voice Changer</h1>
-            <p class="subtitle">Transform your voice during calls with custom accents</p>
+            <p class="subtitle">Transform your voice during calls with celebrity voices and custom accents</p>
         </header>
         
         <main>
@@ -25,7 +25,7 @@
                     <button id="startButton" class="primary-btn">
                         <i class="fas fa-microphone"></i> Start Microphone
                     </button>
-                    <button id="stopButton" class="danger-btn" disabled>
+                    <button id="stopButton" class="danger-btn hidden">
                         <i class="fas fa-microphone-slash"></i> Stop Microphone
                     </button>
                 </div>
@@ -33,6 +33,12 @@
                 <div class="status-indicator">
                     <div id="statusDot" class="status-dot inactive"></div>
                     <p id="statusText">Microphone inactive</p>
+                </div>
+
+                <div class="phone-call-controls">
+                    <button id="callVoiceBtn" class="call-btn">
+                        <i class="fas fa-phone"></i> Make Phone Call
+                    </button>
                 </div>
             </section>
             
@@ -65,6 +71,8 @@
                                 <option value="spanish">Spanish</option>
                                 <option value="russian">Russian</option>
                                 <option value="indian">Indian</option>
+                                <option value="scottish">Scottish</option>
+                                <option value="alien">Alien</option>
                             </select>
                         </div>
                         
@@ -81,34 +89,57 @@
                     </div>
                 </div>
                 
-                <div class="custom-voices">
-                    <h2>Custom Voices</h2>
-                    <div class="voice-upload">
-                        <form id="voiceUploadForm" enctype="multipart/form-data">
-                            <div class="file-upload">
-                                <label for="voiceFile" class="file-label">
-                                    <i class="fas fa-upload"></i> Choose Voice File
-                                </label>
-                                <input type="file" id="voiceFile" name="voiceFile" accept="audio/*" class="file-input" required>
-                                <span id="fileNameDisplay">No file chosen</span>
-                            </div>
-                            
-                            <div class="voice-details">
-                                <input type="text" id="voiceName" name="voiceName" placeholder="Voice Name" required>
-                                <input type="text" id="accentType" name="accentType" placeholder="Accent Type (e.g., Scottish, Japanese)" required>
-                            </div>
-                            
-                            <button type="submit" id="uploadBtn" class="primary-btn">
-                                <i class="fas fa-plus-circle"></i> Add Custom Voice
-                            </button>
-                        </form>
+                <div class="voices-container">
+                    <div class="voices-selector">
+                        <button class="voice-selector-btn active" data-target="celebrityVoicesList">Celebrity Voices</button>
+                        <button class="voice-selector-btn" data-target="customVoicesList">Custom Voices</button>
                     </div>
                     
-                    <div class="saved-voices">
-                        <h3>Your Custom Voices</h3>
-                        <div id="voicesList" class="voices-list">
-                            <!-- Custom voices will be loaded here dynamically -->
-                            <div class="loading-voices">Loading custom voices...</div>
+                    <div id="celebrityVoicesList" class="voice-list">
+                        <!-- Celebrity voices will be loaded here dynamically -->
+                        <div class="loading-voices">Loading celebrity voices...</div>
+                    </div>
+                    
+                    <div id="customVoicesList" class="voice-list hidden">
+                        <div class="voice-upload">
+                            <form id="voiceUploadForm" enctype="multipart/form-data">
+                                <div class="file-upload">
+                                    <label for="voiceFile" class="file-label">
+                                        <i class="fas fa-upload"></i> Choose Voice File
+                                    </label>
+                                    <input type="file" id="voiceFile" name="voiceFile" accept="audio/*" class="file-input" required>
+                                    <span id="fileNameDisplay">No file chosen</span>
+                                </div>
+                                
+                                <div class="voice-details">
+                                    <input type="text" id="voiceName" name="voiceName" placeholder="Voice Name" required>
+                                    <select id="accentType" name="accentType" class="select" required>
+                                        <option value="">Select Accent</option>
+                                        <option value="neutral">Neutral</option>
+                                        <option value="british">British</option>
+                                        <option value="american">American</option>
+                                        <option value="australian">Australian</option>
+                                        <option value="french">French</option>
+                                        <option value="german">German</option>
+                                        <option value="spanish">Spanish</option>
+                                        <option value="russian">Russian</option>
+                                        <option value="indian">Indian</option>
+                                        <option value="scottish">Scottish</option>
+                                    </select>
+                                </div>
+                                
+                                <button type="submit" id="uploadBtn" class="primary-btn">
+                                    <i class="fas fa-plus-circle"></i> Add Custom Voice
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <div class="saved-voices">
+                            <h3>Your Custom Voices</h3>
+                            <div class="custom-voices-list">
+                                <!-- Custom voices will be loaded here dynamically -->
+                                <div class="no-voices">No custom voices available. Upload one to get started!</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -117,6 +148,27 @@
             <section class="visualization">
                 <h2>Audio Visualization</h2>
                 <canvas id="audioVisualizer"></canvas>
+            </section>
+            
+            <section class="call-features">
+                <h2>Phone Call Features</h2>
+                <div class="call-features-content">
+                    <div class="call-feature">
+                        <i class="fas fa-phone-alt feature-icon"></i>
+                        <h3>Direct Calling</h3>
+                        <p>Make calls directly from the app with your transformed voice</p>
+                    </div>
+                    <div class="call-feature">
+                        <i class="fas fa-user-secret feature-icon"></i>
+                        <h3>Voice Transformation</h3>
+                        <p>Use celebrity voices or create your own custom voice</p>
+                    </div>
+                    <div class="call-feature">
+                        <i class="fas fa-mobile-alt feature-icon"></i>
+                        <h3>Mobile Compatible</h3>
+                        <p>Works with mobile calls and popular calling apps</p>
+                    </div>
+                </div>
             </section>
             
             <section class="usage-instructions">
@@ -133,8 +185,8 @@
                     <div class="instruction-step">
                         <div class="step-number">2</div>
                         <div class="step-content">
-                            <h3>Adjust Voice Settings</h3>
-                            <p>Modify the pitch, formant, accent, and effects to get your desired voice.</p>
+                            <h3>Choose a Voice</h3>
+                            <p>Select a celebrity voice or create your own custom voice.</p>
                         </div>
                     </div>
                     
@@ -142,7 +194,7 @@
                         <div class="step-number">3</div>
                         <div class="step-content">
                             <h3>Make Your Call</h3>
-                            <p>Open your calling app (Zoom, Discord, etc.) and select "Voice Changer" as your microphone input.</p>
+                            <p>Click "Make Phone Call" or use your calling app and select "Voice Changer" as your microphone input.</p>
                         </div>
                     </div>
                     
@@ -158,7 +210,7 @@
         </main>
         
         <footer>
-            <p>&copy; 2023 Real-Time Voice Changer. All rights reserved.</p>
+            <p>&copy; 2025 Real-Time Voice Changer. All rights reserved.</p>
             <div class="browser-support">
                 <p>Best experienced in Chrome, Firefox, and Edge.</p>
             </div>
@@ -174,11 +226,44 @@
         </div>
     </div>
     
+    <div id="successModal" class="modal">
+        <div class="modal-content success">
+            <span class="close-modal">&times;</span>
+            <h2><i class="fas fa-check-circle"></i> Success</h2>
+            <p id="successMessage"></p>
+        </div>
+    </div>
+    
     <div id="permissionModal" class="modal">
         <div class="modal-content">
             <h2><i class="fas fa-microphone"></i> Microphone Access Required</h2>
             <p>This application needs access to your microphone to function. Please allow microphone access when prompted.</p>
             <button id="permissionOkBtn" class="primary-btn">Got it</button>
+        </div>
+    </div>
+    
+    <div id="phoneCallModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="callCancelBtn">&times;</span>
+            <h2><i class="fas fa-phone"></i> Make a Call</h2>
+            <form id="phoneCallForm">
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Enter phone number" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Selected Voice</label>
+                    <p id="selectedVoiceDisplay" class="text-muted">No voice selected</p>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" id="callCancelBtnBottom" class="secondary-btn">Cancel</button>
+                    <button type="submit" id="callBtn" class="primary-btn">
+                        <i class="fas fa-phone"></i> Call Now
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
     
