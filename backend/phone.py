@@ -4,6 +4,7 @@ import socket
 import time
 import random
 import string
+import threading
 from backend import models
 
 # Asterisk AMI (Asterisk Manager Interface) credentials
@@ -20,48 +21,148 @@ class PhoneCallManager:
         self.ami_socket = None
         self.active_calls = {}
         
-    def _connect_to_ami(self):
-        """Connect to the Asterisk Manager Interface"""
+    def _connect_to_ami(self, retry_count=3, retry_delay=2):
+        """Connect to the Asterisk Manager Interface with retry mechanism
+        
+        Args:
+            retry_count (int): Number of connection attempts before giving up
+            retry_delay (int): Delay in seconds between retry attempts
+            
+        Returns:
+            bool: True if connection succeeded, False otherwise
+        """
+        # Close existing connection if any
         if self.ami_socket:
             try:
                 self.ami_socket.close()
-            except:
-                pass
+            except Exception as e:
+                print(f"Error closing existing AMI connection: {e}")
             self.ami_socket = None
+        
+        # Check if Asterisk credentials are configured
+        if not ASTERISK_HOST or not ASTERISK_USERNAME or not ASTERISK_SECRET:
+            print("Asterisk credentials not configured properly")
+            return False
             
-        try:
-            # Create a socket connection to the Asterisk AMI
-            self.ami_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.ami_socket.connect((ASTERISK_HOST, ASTERISK_PORT))
-            
-            # Read the welcome message
-            welcome = self._read_response()
-            
-            # Login to AMI
-            login_cmd = (
-                f"Action: Login\r\n"
-                f"Username: {ASTERISK_USERNAME}\r\n"
-                f"Secret: {ASTERISK_SECRET}\r\n"
-                f"\r\n"
-            )
-            self.ami_socket.send(login_cmd.encode())
-            login_response = self._read_response()
-            
-            if "Success" in login_response:
-                return True
-            else:
-                self.ami_socket.close()
-                self.ami_socket = None
-                return False
-        except Exception as e:
-            print(f"Error connecting to Asterisk AMI: {e}")
-            if self.ami_socket:
-                try:
+        # Try to connect with retries
+        for attempt in range(retry_count):
+            try:
+                print(f"Connecting to Asterisk AMI ({attempt + 1}/{retry_count})...")
+                
+                # Create a socket connection to the Asterisk AMI
+                self.ami_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.ami_socket.settimeout(10)  # Set a timeout for connection
+                self.ami_socket.connect((ASTERISK_HOST, ASTERISK_PORT))
+                
+                # Read the welcome message
+                welcome = self._read_response()
+                if not welcome:
+                    print("Did not receive welcome message from Asterisk AMI")
                     self.ami_socket.close()
+                    self.ami_socket = None
+                    if attempt < retry_count - 1:
+                        print(f"Retrying in {retry_delay} seconds...")
+                        time.sleep(retry_delay)
+                    continue
+                
+                # Login to AMI
+                login_cmd = (
+                    f"Action: Login\r\n"
+                    f"Username: {ASTERISK_USERNAME}\r\n"
+                    f"Secret: {ASTERISK_SECRET}\r\n"
+                    f"\r\n"
+                )
+                self.ami_socket.send(login_cmd.encode())
+                login_response = self._read_response()
+                
+                if "Success" in login_response:
+                    print("Successfully connected to Asterisk AMI")
+                    
+                    # Set up a keepalive ping
+                    self._start_keepalive()
+                    
+                    return True
+                else:
+                    print(f"Failed to authenticate with Asterisk AMI: {login_response}")
+                    self.ami_socket.close()
+                    self.ami_socket = None
+                    if attempt < retry_count - 1:
+                        print(f"Retrying in {retry_delay} seconds...")
+                        time.sleep(retry_delay)
+            except socket.timeout:
+                print("Connection to Asterisk AMI timed out")
+                if self.ami_socket:
+                    try:
+                        self.ami_socket.close()
+                    except:
+                        pass
+                    self.ami_socket = None
+                if attempt < retry_count - 1:
+                    print(f"Retrying in {retry_delay} seconds...")
+                    time.sleep(retry_delay)
+            except Exception as e:
+                print(f"Error connecting to Asterisk AMI: {e}")
+                if self.ami_socket:
+                    try:
+                        self.ami_socket.close()
+                    except:
+                        pass
+                    self.ami_socket = None
+                if attempt < retry_count - 1:
+                    print(f"Retrying in {retry_delay} seconds...")
+                    time.sleep(retry_delay)
+                    
+        print("All connection attempts to Asterisk AMI failed")
+        return False
+        
+    def _start_keepalive(self):
+        """Start a background thread to keep the AMI connection alive"""
+        if hasattr(self, '_keepalive_thread') and self._keepalive_thread and self._keepalive_thread.is_alive():
+            return  # Keepalive thread already running
+            
+        self._keepalive_running = True
+        self._keepalive_thread = threading.Thread(target=self._keepalive_worker)
+        self._keepalive_thread.daemon = True
+        self._keepalive_thread.start()
+        
+    def _stop_keepalive(self):
+        """Stop the keepalive thread"""
+        self._keepalive_running = False
+        if hasattr(self, '_keepalive_thread') and self._keepalive_thread:
+            self._keepalive_thread.join(timeout=1)
+            self._keepalive_thread = None
+            
+    def _keepalive_worker(self):
+        """Worker thread that sends periodic pings to keep the AMI connection alive"""
+        ping_interval = 30  # Send a ping every 30 seconds
+        
+        while self._keepalive_running and self.ami_socket:
+            try:
+                time.sleep(ping_interval)
+                
+                if not self.ami_socket:
+                    break
+                    
+                # Send a ping action
+                ping_cmd = (
+                    f"Action: Ping\r\n"
+                    f"ActionID: keepalive-{int(time.time())}\r\n"
+                    f"\r\n"
+                )
+                self.ami_socket.send(ping_cmd.encode())
+                
+                # Read the response (but don't block for too long)
+                response = self._read_response(timeout=2)
+                
+                if not response or "Error" in response:
+                    print("AMI connection may be dead, attempting to reconnect...")
+                    self._connect_to_ami()
+            except Exception as e:
+                print(f"Error in keepalive thread: {e}")
+                try:
+                    self._connect_to_ami()
                 except:
                     pass
-                self.ami_socket = None
-            return False
             
     def _read_response(self, timeout=5):
         """Read a response from the AMI socket"""

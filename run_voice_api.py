@@ -3,8 +3,10 @@ import json
 import os
 import sys
 import time
+import threading
 from backend.voice_api import app
 from backend import models
+from backend.agi_server import run_agi_server
 
 def init_database():
     """Initialize the database with celebrity voices"""
@@ -88,6 +90,12 @@ if __name__ == '__main__':
                 print("Shutting down...")
                 break
     else:
-        # Just start the Flask API normally
+        # Start the FastAGI server in a separate thread
+        print("Starting Asterisk FastAGI server on port 4573...")
+        agi_thread = threading.Thread(target=run_agi_server)
+        agi_thread.daemon = True
+        agi_thread.start()
+        
+        # Start the Flask API in the main thread
         print("Starting Voice API on port 5001...")
         app.run(host='0.0.0.0', port=5001, debug=True)
