@@ -103,12 +103,19 @@ class AGIServer:
     
     def start(self):
         """Start the AGI server"""
-        # Create server socket
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.bind((self.host, self.port))
-        self.socket.listen(5)
-        self.running = True
+        try:
+            # Create server socket
+            self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.socket.bind((self.host, self.port))
+            self.socket.listen(5)
+            self.running = True
+        except OSError as e:
+            if e.errno == 98:  # Address already in use
+                logger.warning(f"Address {self.host}:{self.port} already in use, skipping AGI server start")
+                return
+            else:
+                raise
         
         logger.info(f"FastAGI server started on {self.host}:{self.port}")
         

@@ -384,10 +384,10 @@ def get_asterisk_status():
     
     try:
         # Check if Asterisk credentials are configured
-        configured = all([ASTERISK_HOST, ASTERISK_USERNAME, ASTERISK_SECRET])
+        is_configured = all([ASTERISK_HOST, ASTERISK_USERNAME, ASTERISK_SECRET])
         
         # If not configured, return early
-        if not configured:
+        if not is_configured:
             return jsonify({
                 'configured': False,
                 'connected': False
@@ -404,8 +404,10 @@ def get_asterisk_status():
             'message': 'Connected successfully' if connected else 'Failed to connect to Asterisk'
         })
     except Exception as e:
+        # Handle the case when is_configured might not be defined due to exception
+        configured_status = is_configured if 'is_configured' in locals() else False
         return jsonify({
-            'configured': configured if 'configured' in locals() else False,
+            'configured': configured_status,
             'connected': False,
             'message': f'Error checking Asterisk status: {str(e)}'
         })

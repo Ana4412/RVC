@@ -357,7 +357,7 @@
         localStorage.setItem('asteriskConfig', JSON.stringify(config));
         
         // Send the configuration to the server
-        fetch('/api/config/asterisk', {
+        fetch('/api_proxy.php/config/asterisk', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -385,7 +385,7 @@
         statusElement.className = 'status warning';
         statusElement.textContent = 'Testing Asterisk connection...';
         
-        fetch('/api/config/asterisk/test', {
+        fetch('/api_proxy.php/config/asterisk/test', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

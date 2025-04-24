@@ -16,6 +16,10 @@ author = "agent"
 task = "workflow.run"
 args = "PHP Server"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Python API Server"
+
 [[workflows.workflow]]
 name = "PHP Server"
 author = "agent"
@@ -31,9 +35,32 @@ task = "shell.exec"
 args = "php -S 0.0.0.0:5000"
 waitForPort = 5000
 
+[[workflows.workflow]]
+name = "Python API Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python run_voice_api.py"
+waitForPort = 5001
+
 [deployment]
 run = ["sh", "-c", "php -S 0.0.0.0:5000"]
 
 [[ports]]
+localPort = 4573
+externalPort = 3000
+
+[[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 5001
+externalPort = 3001
