@@ -418,7 +418,7 @@
     function checkAsteriskStatus() {
         const statusElement = document.getElementById('asteriskStatus');
         
-        fetch('/api/config/asterisk/status')
+        fetch('/api_proxy.php/config/asterisk/status')
         .then(response => response.json())
         .then(data => {
             if (data.configured) {
@@ -460,7 +460,7 @@
         localStorage.setItem('agiConfig', JSON.stringify(config));
         
         // Send the configuration to the server
-        fetch('/api/config/agi', {
+        fetch('/api_proxy.php/config/agi', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -484,7 +484,7 @@
     
     // Function to restart the AGI server
     function restartAgiServer() {
-        fetch('/api/config/agi/restart', {
+        fetch('/api_proxy.php/config/agi/restart', {
             method: 'POST'
         })
         .then(response => response.json())
@@ -506,7 +506,7 @@
     function checkAgiStatus() {
         const statusElement = document.getElementById('agiStatus');
         
-        fetch('/api/config/agi/status')
+        fetch('/api_proxy.php/config/agi/status')
         .then(response => response.json())
         .then(data => {
             if (data.running) {
@@ -554,7 +554,7 @@
         localStorage.setItem('voiceConfig', JSON.stringify(config));
         
         // Send the configuration to the server
-        fetch('/api/config/voice', {
+        fetch('/api_proxy.php/config/voice', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

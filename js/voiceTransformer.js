@@ -55,7 +55,7 @@ class VoiceTransformer {
         try {
             // First try the new API endpoint
             try {
-                const response = await fetch('/api/voices/custom');
+                const response = await fetch('/api_proxy.php/voices/custom');
                 if (response.ok) {
                     const voiceData = await response.json();
                     
@@ -269,7 +269,7 @@ class VoiceTransformer {
                     }
                 };
                 
-                const response = await fetch('/api/voices', {
+                const response = await fetch('/api_proxy.php/voices', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
