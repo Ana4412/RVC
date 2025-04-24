@@ -542,6 +542,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Rating functionality
+    const stars = document.querySelectorAll('.star-rating .fa-star');
+    const ratingFeedback = document.getElementById('ratingFeedback');
+    
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = this.dataset.rating;
+            
+            // Update visual feedback
+            stars.forEach(s => {
+                s.classList.remove('active');
+                if (s.dataset.rating <= rating) {
+                    s.classList.add('active');
+                }
+            });
+            
+            // Update feedback text
+            ratingFeedback.textContent = `Thanks for rating ${rating} stars!`;
+            
+            // Here you could send the rating to your backend
+            console.log(`User rated: ${rating} stars`);
+        });
+    });
+
     // Initialize the application
     init();
 });
