@@ -95,7 +95,9 @@ document.addEventListener('DOMContentLoaded', function() {
     async function startVoiceChanger() {
         try {
             // Check if we already have permission
-            const permissionStatus = await navigator.permissions.query({ name: 'microphone' });
+            const permissionStatus = await navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(() => ({ state: 'granted' }))
+            .catch(() => ({ state: 'denied' }));
             
             if (permissionStatus.state === 'denied') {
                 Utils.showError('Microphone access is blocked. Please allow access in your browser settings.');
