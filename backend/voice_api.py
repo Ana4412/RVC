@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify, render_template, redirect, url_for
 from backend.debug_bot import DebugBot
 
 app = Flask(__name__, template_folder='..', static_folder='..')
+debug_bot = DebugBot()
 
 @app.route('/')
 def home():
@@ -39,7 +40,6 @@ from backend import models
 from backend.phone import PhoneCallManager
 from backend.phone_numbers import PhoneNumberManager
 
-app = Flask(__name__)
 phone_number_manager = PhoneNumberManager()
 
 # Virtual Number Routes
